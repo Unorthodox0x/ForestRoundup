@@ -18,6 +18,8 @@ import { BoardLocation, EnemyDirection } from "@/types";
 import RenderEngine from "@/lib/render/RenderEngine";
 import Controller from "@/lib/input/Controller";
 import EventHandler from "../events/EventHandler";
+import { enemyCount } from "@/constants/game";
+import { canvasHeight, canvasWidth } from "@/constants/canvas";
 
 /** 
  * This class is stored in a useRef hook 
@@ -25,10 +27,9 @@ import EventHandler from "../events/EventHandler";
  */	
 export default class Board {
 
-	terrainCanvas: HTMLCanvasElement;
-	playerCanvas: HTMLCanvasElement;
-	enemyCanvas: HTMLCanvasElement;
-	treasureCanvas: HTMLCanvasElement;
+	terrainCanvas: HTMLCanvasElement|null;
+	enemyCanvas: HTMLCanvasElement|null;
+	treasureCanvas: HTMLCanvasElement|null;
 	eventHandler: EventHandler;
 
 	enemies: Enemy[];
@@ -36,30 +37,19 @@ export default class Board {
 	treasure: BoardLocation;
 
 	constructor(
-		terrainCanvas:HTMLCanvasElement,
-		playerCanvas:HTMLCanvasElement,
+		terrainCanvas: HTMLCanvasElement,
 		enemyCanvas: HTMLCanvasElement,
 		treasureCanvas: HTMLCanvasElement,
 		eventHandler: EventHandler,
 	){
 		this.terrainCanvas = terrainCanvas;
-		this.playerCanvas = playerCanvas;
 		this.enemyCanvas = enemyCanvas;
-		this.treasureCanvas = treasureCanvas;
+		this.treasureCanvas = treasureCanvas; 
 		this.eventHandler = eventHandler; // moves enemies
 
 		this.enemies = [];
 		this.chunks = [];
 		this.treasure = { chunk: 0, tile:0 } /// initialze default, will be upated when board fully generated
-	}
-
-	clearMap(){
-		this.chunks = [];
-	}
-
-	getChunk(chunkIndex:number|undefined){
-		if((chunkIndex !== 0 && !chunkIndex) || chunkIndex > this.chunks.length - 1) throw new Error('out of index')
-		return this.chunks[chunkIndex]!;
 	}
 
 	async initialize(){
@@ -108,7 +98,8 @@ export default class Board {
 	}
 
 	async spawnEnemies(){
-		const enemyCount = 10;
+		if(!this.enemyCanvas) return;
+
 		for(let i=0; i < enemyCount; i++){
 
 			/** Spawn enemy by adding them to some tile's state */
@@ -193,9 +184,9 @@ export default class Board {
 
 			/// *** Draw Treasure  *** ///
 				/// clear last
-			const context = this.treasureCanvas.getContext('2d');
+			const context = this.treasureCanvas?.getContext('2d');
 			if(!context) return;
-			context.clearRect(0, 0, this.treasureCanvas.width, this.treasureCanvas.height)
+			context.clearRect(0, 0, canvasWidth, canvasHeight)
 				/// draw new
 			RenderEngine.drawTreasure(
 				tile,
@@ -308,5 +299,14 @@ export default class Board {
 
 		this.enemies = await Promise.all(movements);
     }
+
+    clearMap(){
+		this.chunks = [];
+	}
+
+	getChunk(chunkIndex:number|undefined){
+		if((chunkIndex !== 0 && !chunkIndex) || chunkIndex > this.chunks.length - 1) throw new Error('out of index')
+		return this.chunks[chunkIndex]!;
+	}
 }
 

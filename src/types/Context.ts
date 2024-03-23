@@ -4,6 +4,10 @@ import type Board from '@/lib/map/Board';
 import { GameStates, SetStateType } from "./Base";
 import EventHandler from "@/lib/events/EventHandler";
 
+export type IWalletContext = {
+	
+}
+
 export type IControllerContext = object;
 
 export type IGameContext = {
@@ -12,10 +16,13 @@ export type IGameContext = {
     score: number,
     setScore: SetStateType<number>,
 
+	// gameState: GameStates,
+	// setGameState: SetStateType<GameStates>,
 	gameState: RefObject<GameStates>,
 	setGameState: (ref:GameStates) => void,
 
 	gameOverScreen: RefObject<HTMLCanvasElement> | null,
+	gameStartScreen: RefObject<HTMLCanvasElement> | null,
 	terrainCanvas: RefObject<HTMLCanvasElement> | null,
 	enemyCanvas: RefObject<HTMLCanvasElement> | null,
 	treasureCanvas: RefObject<HTMLCanvasElement> | null,

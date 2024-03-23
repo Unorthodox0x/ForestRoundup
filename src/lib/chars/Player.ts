@@ -28,8 +28,7 @@ export default class Player {
 	constructor(
 		playerCanvas:HTMLCanvasElement
 	){
-		if(!playerCanvas) throw new Error('missing canvas')
-		this.canvas = playerCanvas; /// canvas where only player is drawn
+		this.canvas = playerCanvas
 		this.direction = playerDown; /// paired with initial state set in board during initialization
 
 		this.location = {
@@ -46,7 +45,7 @@ export default class Player {
 		this.canvasY = 
 			chunk.y * chunkHeight * gameSquare + 
 			tile.y * gameSquare;
-		
+
 		/// draw newly created player
 		this.draw(renderStateOne);
 	}
@@ -85,10 +84,12 @@ export default class Player {
 	 * 	 just target that tile directly
 	 */
 	async draw(renderState: RenderStateOne|RenderStateTwo){
+
 		const sprite = RenderEngine.getSprite(this.direction);
 		if(!sprite) return;
 
 		const playerContext = this.canvas.getContext('2d');
+		console.log('draw player', this.canvas)
 		if(!playerContext) return;
 		
 		const tileImage = new Image();

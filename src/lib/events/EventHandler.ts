@@ -13,34 +13,36 @@ export default class EventHandler {
 	setGameState: IGameContext['setGameState']
 	setScore: IGameContext['setScore'];
 	setBoardRef: IGameContext['setBoardRef']
+	setPlayerRef:IGameContext['setPlayerRef']
+	resetGameFrames: () => void;
 
 	constructor(
 		setBoardRef: IGameContext['setBoardRef'],
 		setScore: IGameContext['setScore'],
 		setGameState: IGameContext['setGameState'],
+		setPlayerRef: IGameContext['setPlayerRef'],
+		resetGameFrames: () => void,
 	){
 		this.setGameState = setGameState;
 		this.setScore = setScore;
 		this.setBoardRef = setBoardRef;
+		this.setPlayerRef = setPlayerRef;
+		this.resetGameFrames = resetGameFrames;
 	}
 
 	async handleStart(
-		playerCanvas: HTMLCanvasElement|null,
-		terrainCanvas: HTMLCanvasElement|null,
-		enemyCanvas: HTMLCanvasElement|null,
-		treasureCanvas: HTMLCanvasElement|null,
-		eventHandler: EventHandler,
-		setPlayerRef: IGameContext['setPlayerRef'],
-	){
-		if(!playerCanvas||!terrainCanvas||!enemyCanvas||!treasureCanvas) return;
-	
+		playerCanvas: HTMLCanvasElement,
+		terrainCanvas: HTMLCanvasElement,
+		enemyCanvas: HTMLCanvasElement,
+		treasureCanvas: HTMLCanvasElement, 
+	){	
 		/// generate board && player
-		const board = new Board(terrainCanvas, playerCanvas, enemyCanvas, treasureCanvas, eventHandler);
+		const board = new Board(terrainCanvas, enemyCanvas, treasureCanvas, this);
 	
 		await board.initialize(); /// initialize board
 		this.setBoardRef(board);
 	
-		setPlayerRef(new Player(playerCanvas)); /// initialze player
+		this.setPlayerRef(new Player(playerCanvas)); /// initialze player
 
 		this.setGameState(running); /// signal start
 	}
@@ -82,7 +84,7 @@ export default class EventHandler {
 			/// remove both player && enemy from their tiles
 			char.direction = direction;
 			char.move(nextTileLoc)
-			this.handleLose(board);
+			this.handleLose();
 			return char;
 		}
 
@@ -149,7 +151,7 @@ export default class EventHandler {
 
     //// TODO Set score to 0 when new game starts
     /// this will allow display of score on game over screen
-    handleLose(board: Board){
+    handleLose(){
 
    		/// losing state has already been detected 	
 
@@ -159,8 +161,11 @@ export default class EventHandler {
     	/// display Game Over && score
     	/// simple black screen, big white letters, 
     	/// score below
-
+    	this.resetGameFrames();
 		this.setGameState(gameOver);
 		this.setBoardRef(null);
+		this.setPlayerRef(null);
+		// this.setGameState(null);
+
     }
 }

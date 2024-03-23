@@ -1,3 +1,4 @@
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -14,6 +15,9 @@ export default {
       width: {
         'cameraWidth': '1000px',
         'canvasWidth': '580px',
+      },
+      fontFamily: {
+        Milonga: ['Milonga', ...fontFamily.sans],
       },
     },
   },

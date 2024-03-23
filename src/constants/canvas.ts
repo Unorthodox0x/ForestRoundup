@@ -15,9 +15,15 @@ export const renderStateTwo = 1 as const;
 export const verticleTiles = 16 as const; // chunkHeigh * num verticle chunks
 export const horizontalTiles = 36 as const; // chunkWidth * num horizontal chunks
 
-export const canvasId = "raccoon-roundup" as const;
-export const gameOverCanvas = 'GameOverScreen' as const;
+export const terrainCanvasId = "Terrian Canvas" as const;
+export const objectCanvasId = "Object Canvas" as const;
+export const playerCanvasId = "Player Canvas" as const;
+export const treeCanvasId = "Tree Canvas" as const;
+export const treasureCanvasId = "Treasure Canvas" as const;
+export const enemyCanvasId = "Enemy Canvas" as const;
 
+export const gameOverCanvas = 'GameOverScreen' as const; // this has its own canvas
+export const gameStartCanvas = 'StartGameScreen' as const; /// this uses terrain canvas
 
 /// view-port
 export const canvasHeight = gameSquare * verticleTiles*2; 

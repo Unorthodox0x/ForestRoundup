@@ -1,21 +1,18 @@
-import { canvasId, canvasHeight, canvasWidth } from '@/constants/canvas';
+import { canvasHeight, canvasWidth, treeCanvasId, terrainCanvasId, playerCanvasId, treasureCanvasId, enemyCanvasId, objectCanvasId } from '@/constants/canvas';
 import { useContext } from "react";
 import { GameContext } from "@/context/Game";
 
-
-export const GameScreen = () => {
+export default function GameScreen() {
 
 	const { 
-		objectCanvas,
-		playerCanvas,
-		enemyCanvas,
-		treasureCanvas,
-		terrainCanvas,
-		treeCanvas,
-		score,
+    score,
+    objectCanvas,
+    playerCanvas,
+    enemyCanvas,
+    treasureCanvas,
+    terrainCanvas,
+    treeCanvas,
 	} = useContext(GameContext);
-
-	// if(!terrainCanvas) return null;
 
 	return(
 		<div className="inline-flex justify-center h-cameraHeight w-cameraWidth bg-green-200 bg-opacity-95 p-4">
@@ -26,47 +23,45 @@ export const GameScreen = () => {
       <canvas
         className="bg-transparent h-cameraHeight w-cameraWidth absolute z-10"
         ref={objectCanvas} 
-        id={canvasId}
+        id={objectCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
       <canvas
         className="bg-transparent h-cameraHeight w-cameraWidth absolute z-20"
         ref={enemyCanvas} 
-        id={canvasId}
+        id={enemyCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
       <canvas
         className="bg-transparent h-cameraHeight w-cameraWidth absolute z-20"
         ref={treasureCanvas} 
-        id={canvasId}
+        id={treasureCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
       <canvas
         className="bg-transparent h-cameraHeight w-cameraWidth absolute z-20"
         ref={playerCanvas} 
-        id={canvasId}
+        id={playerCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
       <canvas
-        className="bg-white h-cameraHeight w-cameraWidth absolute"
+        className="bg-black h-cameraHeight w-cameraWidth absolute"
         ref={terrainCanvas} 
-        id={canvasId}
+        id={terrainCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
       <canvas
         className="bg-transparent h-cameraHeight w-cameraWidth absolute z-20"
         ref={treeCanvas} 
-        id={canvasId}
+        id={treeCanvasId}
         height={canvasHeight} 
         width={canvasWidth}
       />
     </div>
 	);
 }
-
-export default GameScreen

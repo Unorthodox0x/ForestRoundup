@@ -181,15 +181,15 @@ class RenderEngine {
 	/// the snail caught in the battle should be removed from board state
 	/// so that other snails continue moving, but this snail involved in battle
 	/// is no longer moved/animated
-	playDeathAnimation(){
-		/// where?
-		const sprite = spriteAnimationFrames['BattleAnimation'];
-		for(let frame=0; frame < 6; frame++){ /// death animation has 6 frames
-			setTimeout(()=>{
+	// playDeathAnimation(){
+	// 	/// where?
+	// 	const sprite = spriteAnimationFrames['BattleAnimation'];
+	// 	for(let frame=0; frame < 6; frame++){ /// death animation has 6 frames
+	// 		setTimeout(()=>{
 
-			},100) /// timeout to introduce small pause between frames
-		}
-	}
+	// 		},100) /// timeout to introduce small pause between frames
+	// 	}
+	// }
 
 	/**
 	 * This draw method is bound to the chunk:{ x, y }, tile:{ x, y } coordinates of an object in the map grid
