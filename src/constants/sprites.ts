@@ -1,4 +1,5 @@
 import { ObjectSpriteSources, ObjectSprites, ObjectSpriteNames, TerrainSpriteSources,   TerrainSprites, TerrainNames } from "@/types";
+import images from '@/assets';
 
 /// dimensions of all sprites on sprite sheets
 export const gameSquare = 32 as const; /// 32px x 32px
@@ -26,51 +27,51 @@ export const objectSources: ObjectSpriteSources = {
 	/// player movement direction
 	playerDown: {
 		frames: 2,
-		src: `src/assets/sprites/playerDown.png`,
+		src: images.playerDown,
 	},
 	playerUp:{ 
 		frames: 2,
-		src:`src/assets/sprites/playerUp.png`,
+		src: images.playerUp,
 	},
 	playerLeft:{ 
 		frames: 2,
-		src:`src/assets/sprites/playerLeft.png`,
+		src: images.playerLeft
 	},
 	playerRight:{ 
 		frames: 2,
-		src:`src/assets/sprites/playerRight.png`,
+		src: images.playerRight,
 	},
 
 	/// player movement direction
 	enemyDown: {
 		frames: 2,
-		src: `src/assets/sprites/enemyDown.png`,
+		src: images.enemyDown,
 	},
 	enemyUp:{ 
 		frames: 2,
-		src:`src/assets/sprites/enemyUp.png`,
+		src:images.enemyUp,
 	},
 	enemyLeft:{ 
 		frames: 2,
-		src:`src/assets/sprites/enemyLeft.png`,
+		src:images.enemyLeft,
 	},
 	enemyRight:{ 
 		frames: 2,
-		src:`src/assets/sprites/enemyRight.png`,
+		src:images.enemyRight,
 	},
 
 	BattleAnimation:{
 		frames: 6,
-		src:`src/assets/sprites/BattleAnimation.png`,
+		src: images.battleAnimation,
 	},
 
 	StartGameScreen:{
 		frames: 1,
-		src:`src/assets/sprites/StartGameScreen.png`,
+		src: images.startGameScreen,
 	},
 	GameOverScreen:{
 		frames: 1,
-		src:`src/assets/sprites/GameOverScreen.png`,
+		src: images.gameOverScreen,
 	},
 
 	/// Map obstacles
@@ -79,11 +80,11 @@ export const objectSources: ObjectSpriteSources = {
 	///   t2:[x1, x2] /// two frames
 	TreeOne:{ 
 		frames: 2,
-		src:`src/assets/sprites/TreeOne.png`,
+		src: images.treeOne,
 	},
 	TreeTwo:{ 
 		frames: 2,
-		src:`src/assets/sprites/TreeTwo.png`,
+		src: images.treeTwo,
 	},
 	
 	///   r1 :[x1] /// one frame
@@ -91,15 +92,15 @@ export const objectSources: ObjectSpriteSources = {
 	///   r3 :[x1] /// one frame
 	RockOne:{ 
 		frames: 1,
-		src:`src/assets/sprites/RockOne.png`,
+		src: images.rockOne,
 	},
 	RockTwo:{ 
 		frames: 1,
-		src:`src/assets/sprites/RockTwo.png`,
+		src: images.rockTwo,
 	},
 	RockThree:{ 
 		frames: 1,
-		src:`src/assets/sprites/RockThree.png`,
+		src: images.rockThree,
 	},
 
 	
@@ -110,15 +111,15 @@ export const objectSources: ObjectSpriteSources = {
 	///   t3 :[x1]
 	TreasureOne:{
 		frames: 1,
-		src:`src/assets/sprites/TrashOne.png`,
+		src: images.trashOne,
 	},
 	TreasureTwo:{
 		frames: 1,
-		src:`src/assets/sprites/TrashTwo.png`,
+		src: images.trashTwo,
 	},
 	TreasureThree:{
 		frames: 1,
-		src:`src/assets/sprites/TrashThree.png`,
+		src: images.trashThree,
 	},
 } as const;
 
@@ -127,17 +128,17 @@ export const terrainSources:TerrainSpriteSources = {
 	Forest:{ 
 		variations: 10,
 		frames: 2,
-		src:`src/assets/sprites/ForestTerrain.png`,
+		src: images.forestTerrain,
 	},
 	Ground:{ 
 		variations: 10,
 		frames: 2,
-		src:`src/assets/sprites/GroundTerrain.png`,
+		src: images.groundTerrain,
 	},
 	Field:{ 
 		variations: 10,
 		frames: 2,
-		src:`src/assets/sprites/FieldTerrain.png`,
+		src: images.fieldTerrain,
 	},
 } as const
 

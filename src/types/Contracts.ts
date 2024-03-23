@@ -2,7 +2,6 @@ import type { Address, SupportedChain } from "@/types"
 import type { Chain } from "viem";
 
 export type NetworkImageUrl = `src/assets/networks/${string}.png`
-export type SpriteUrl = `src/assets/sprites/${string}.png`;
 
 export type NetworkInfo = {
   chainId: SupportedChain,

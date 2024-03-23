@@ -39,6 +39,12 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	 */
 	function loadCanvas(){
 		setTimeout(()=>{
+			if(
+				!playerCanvas?.current||
+				!terrainCanvas?.current||
+				!enemyCanvas?.current||
+				!treasureCanvas?.current
+			) return;
 			eventHandler.current?.handleStart(
 				playerCanvas?.current,
 				terrainCanvas?.current,

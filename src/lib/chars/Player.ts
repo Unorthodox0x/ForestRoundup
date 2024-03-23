@@ -89,7 +89,6 @@ export default class Player {
 		if(!sprite) return;
 
 		const playerContext = this.canvas.getContext('2d');
-		console.log('draw player', this.canvas)
 		if(!playerContext) return;
 		
 		const tileImage = new Image();

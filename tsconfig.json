@@ -36,6 +36,6 @@
     "**/*.js",
     "**/*config.js",
   ],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "tests/"],
   "references": [{ "path": "./tsconfig.vite.json" }]
 }

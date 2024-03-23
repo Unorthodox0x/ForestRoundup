@@ -4,9 +4,7 @@ import type Board from '@/lib/map/Board';
 import { GameStates, SetStateType } from "./Base";
 import EventHandler from "@/lib/events/EventHandler";
 
-export type IWalletContext = {
-	
-}
+// export type IWalletContext = {}
 
 export type IControllerContext = object;
 

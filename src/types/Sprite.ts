@@ -40,7 +40,8 @@ export type SpriteSources<TSprite extends SpriteNames> =
 	: never;
 
 
-export type SpriteUrl = `src/assets/${string}.png`;
+export type SpriteUrl = string;
+// export type SpriteUrl = `src/assets/${string}.png`;
 export type ObjectSpriteSource = Omit<TerrainSpriteSource, 'variations'>
 export type TerrainSpriteSource = {
 	variations:number, /// 

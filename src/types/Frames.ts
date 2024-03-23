@@ -1,5 +1,6 @@
 import { playerStaggerFrames, terrainStaggerFrames } from "@/constants/canvas";
-import { Coordinates, PlayerDirection } from "./Base";
+import { PlayerDirection } from "./Sprite";
+import { Coordinates } from "./Board";
 
 export type BackgroundFrames = typeof terrainStaggerFrames
 export type PlayerFrames = typeof playerStaggerFrames
