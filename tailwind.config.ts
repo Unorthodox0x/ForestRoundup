@@ -1,20 +1,27 @@
-import type { Config } from "tailwindcss";
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+const config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      height: {
+        'cameraHeight': '520px',
+        'canvasHeight': '520px',
+      },
+      width: {
+        'cameraWidth': '1000px',
+        'canvasWidth': '580px',
+      },
+      fontFamily: {
+        Milonga: ['Milonga', ...fontFamily.sans],
       },
     },
   },
   plugins: [],
-};
+}
+
 export default config;
