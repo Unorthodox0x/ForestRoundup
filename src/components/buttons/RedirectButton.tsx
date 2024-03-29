@@ -17,7 +17,8 @@ export default function RedirectButton(props: CustomComponentProps){
 
 	function handleRedirect(){
 		if(!redirectToken) return;
-	    window.location.href = `${process.env.NEXT_PUBLIC_CHECKOUT_URL}/?redirectToken=${encodeURIComponent(redirectToken)}`;
+
+	    window.location.href = `${process.env.NEXT_PUBLIC_CHECKOUT_URL}?redirectToken=${encodeURIComponent(redirectToken)}`;
 	    return;
 	}
 

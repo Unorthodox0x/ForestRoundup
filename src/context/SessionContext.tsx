@@ -8,7 +8,7 @@ import { SubscriptionLedgerAbi } from '@/constants/blockchain/abi';
 import config from '@/lib/providers/wagmiConfig';
 import { useAccountEffect, useDisconnect } from 'wagmi'
 import { readContract } from '@wagmi/core';
-import { arbitrum } from 'viem/chains';
+import { arbitrum, sepolia } from 'viem/chains';
 import { getSubLedger } from '@/constants/blockchain/contracts';
 
 export const SessionContext = createContext<ISessionContext>({} as ISessionContext);
@@ -45,8 +45,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }): ReactEle
       try{
         /// This requires contract to be deployed on the network user is connected to
         isSubscribed.current = await readContract(config, {
-          chainId: arbitrum.id,
-          address: getSubLedger(arbitrum.id),
+          chainId: sepolia.id,
+          address: getSubLedger(sepolia.id),
           abi: SubscriptionLedgerAbi,
           functionName: 'isSubscribed',
           args: [

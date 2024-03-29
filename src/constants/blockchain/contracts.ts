@@ -1,5 +1,5 @@
 import type { NetworkInfo, SupportedChain, Address } from "@/types";
-import { arbitrum, foundry } from "viem/chains";
+import { sepolia, foundry } from "viem/chains";
 
 
 /**
@@ -12,8 +12,8 @@ const subscriptionLedgerContracts:NetworkInfo[] = [{
 	chainId: foundry.id,
 	address: process.env.FOUNDRY_SUBSCRIPTION_LEDGER as Address
 },{
-	chainId: arbitrum.id,
-	address: process.env.ARBITRUM_SUBSCRIPTION_LEDGER as Address
+	chainId: sepolia.id,
+	address: process.env.SEPOLIA_SUBSCRIPTION_LEDGER as Address
 }]
 
 
