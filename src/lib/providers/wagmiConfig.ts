@@ -26,7 +26,7 @@ const config = getDefaultConfig({
     // [optimism.id]: http(),
     // [polygon.id]: http(),
   },
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  ssr: false, // If your dApp uses server side rendering (SSR)
 });
 
 export default config;

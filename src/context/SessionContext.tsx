@@ -1,35 +1,32 @@
-"use client";
+'use client';
 
+import { createPublicClient, http } from 'viem'
 import { createContext, useRef, useEffect, useState, type ReactElement, type ReactNode } from 'react';
-import type { Address, ISessionContext } from "@/types";
+import type { Address, ISessionContext, SupportedChain } from "@/types";
 
 import { SubscriptionLedgerAbi } from '@/constants/blockchain/abi';
 
 import config from '@/lib/providers/wagmiConfig';
 import { useAccountEffect, useDisconnect } from 'wagmi'
-import { readContract } from '@wagmi/core';
-import { arbitrum, sepolia } from 'viem/chains';
 import { getSubLedger } from '@/constants/blockchain/contracts';
+import { chainById } from '@/constants/blockchain/networks';
 
 export const SessionContext = createContext<ISessionContext>({} as ISessionContext);
 export const SessionProvider = ({ children }: { children: ReactNode }): ReactElement | null => {
   
-  /// this must be a useRef hook, to be accessed within the controls scope
-  const walletAddress = useRef<Address|null>(null);
-  const isSubscribed = useRef<boolean|null>(null);
-
-  // const { address, isConnected } = useAccount({ config });
-  const {disconnect} = useDisconnect({ config });
-  // console.log('isConnected', isConnected)
-  // console.log('address', address)
-
+  // const walletAddress = useRef<Address|null>(null);
+  // const isSubscribed = useRef<boolean>(false);
   const batch = BigInt(0);
-  const serviceId = 0;
+  const serviceId = 1 as const;
+
+  const [connectedUser, setConnectedUser] = useState<Address|null>(null);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const { disconnect } = useDisconnect({ config });
 
   function handleDisconnect(){
     disconnect();
-    walletAddress.current = null;
-    isSubscribed.current = null;
+    setConnectedUser(null);
+    setIsSubscribed(false);
   }
 
   /** 
@@ -38,43 +35,47 @@ export const SessionProvider = ({ children }: { children: ReactNode }): ReactEle
    */
   useAccountEffect({
     config,
-    async onConnect({ address }) {
-      if(!address) handleDisconnect()
-      walletAddress.current = address;
-
+    async onConnect({ address, chainId }) {
       try{
+
+        if(!address) handleDisconnect()
+        setConnectedUser(address); /// update ref to deliver value to controls
+
+        const subscriptionLedger = getSubLedger(chainId as SupportedChain);
+        const publicClient = createPublicClient({
+          transport: http(),
+          chain: chainById(chainId),
+        });
+
+        // unsupported network
+        if(!subscriptionLedger) {
+            setIsSubscribed(false);
+            return; 
+        }
+
         /// This requires contract to be deployed on the network user is connected to
-        isSubscribed.current = await readContract(config, {
-          chainId: sepolia.id,
-          address: getSubLedger(sepolia.id),
+        const subscribed = await publicClient.readContract({
+          address: subscriptionLedger,
           abi: SubscriptionLedgerAbi,
           functionName: 'isSubscribed',
-          args: [
-            /// connecting user
-            address,
-            batch, 
-            serviceId
-          ]
+          args: [address, batch, serviceId]
         });
+
+        setIsSubscribed(subscribed);
       } catch(err) {
-        isSubscribed.current = false;
+        setIsSubscribed(false)
+        // isSubscribed.current = false;
         console.error(err);
       }
     },
   });
 
-  /// hook to fix wagmi wallet hydration
-  const [hasMounted, setHasMounted] = useState<boolean>(false);
-  /// fix wagmi hydration error
-  useEffect(() => { setHasMounted(true); }, []) /// requires double render
-  if (!hasMounted) return (<></>); // 'null component'  
-
   return (
     <SessionContext.Provider 
       value={{ 
         handleDisconnect,
-        walletAddress: walletAddress.current,
-        isSubscribed: isSubscribed.current
+        walletAddress: connectedUser,
+        isSubscribed: isSubscribed
       }}
     >
       {children}

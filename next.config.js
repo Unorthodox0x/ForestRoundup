@@ -6,7 +6,7 @@ const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
     default-src 'self' https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/ http://fonts.googleapis.com/css?family=Lato;
     script-src 'self' ${production ? '' : "'unsafe-eval'"} 'nonce-${nonce}' 'strict-dynamic';
-    connect-src 'self' wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org/rpc https://mainnet.aurora.dev/ https://cloudflare-eth.com/ https://arb1.arbitrum.io/rpc https://api.avax.network/ext/bc/C/rpc https://explorer-api.walletconnect.com/w3m/v1/getDesktopListings;
+    connect-src 'self' wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org/rpc https://rpc.sepolia.org/ https://mainnet.aurora.dev/ https://cloudflare-eth.com/ https://arb1.arbitrum.io/rpc https://api.avax.network/ext/bc/C/rpc https://explorer-api.walletconnect.com/w3m/v1/getDesktopListings;
     frame-src https://verify.walletconnect.com/ https://verify.walletconnect.org/;
     style-src 'self' ${production ? '' : "'unsafe-inline'"} http://fonts.googleapis.com/ 'nonce-${nonce}';
     img-src 'self' blob: data: https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/;

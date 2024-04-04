@@ -1,7 +1,8 @@
+'use client';
+
 import '@rainbow-me/rainbowkit/styles.css';
 import '@/styles/global.css'
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { 
@@ -16,11 +17,11 @@ import {
 // import { cookieToInitialState } from 'wagmi'
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Forest Roundup",
-  description: "Join Randal in cleaning up the forest",
-};
+// import type { Metadata } from "next";
+// export const metadata: Metadata = {
+//   title: "Forest Roundup",
+//   description: "Join Randal in cleaning up the forest",
+// };
 
 /**
  * A Game is a Module wrapping a canvas

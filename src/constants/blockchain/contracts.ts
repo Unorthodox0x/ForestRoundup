@@ -1,7 +1,6 @@
 import type { NetworkInfo, SupportedChain, Address } from "@/types";
 import { sepolia, foundry } from "viem/chains";
 
-
 /**
  * Design descision::
  * 	publishing contracts cost money, and businesses will only subscribe to a contract on a single network
@@ -10,15 +9,16 @@ import { sepolia, foundry } from "viem/chains";
  */
 const subscriptionLedgerContracts:NetworkInfo[] = [{
 	chainId: foundry.id,
-	address: process.env.FOUNDRY_SUBSCRIPTION_LEDGER as Address
+	address: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0' as Address
 },{
 	chainId: sepolia.id,
-	address: process.env.SEPOLIA_SUBSCRIPTION_LEDGER as Address
+	address: '0x1181B3fF8eD68ca13820c7c8861De6ad77457E48' as Address
 }]
 
-
 export const getSubLedger = (chainId: SupportedChain) => {
-	const contract = subscriptionLedgerContracts.find((c)=> c.chainId === chainId);
+	const contract = subscriptionLedgerContracts.find((c)=> 
+		c.chainId === chainId
+	);
 	if(!contract) throw new Error('unsupported network');
 	return contract.address;
 }

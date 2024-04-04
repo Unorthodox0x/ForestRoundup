@@ -10,6 +10,9 @@ export default function GameStartScreen({ children }: {children: ReactNode[] }) 
 	const { gameStartScreen } =  useContext(GameContext);
   const { walletAddress, isSubscribed } = useContext(SessionContext);
 
+
+  console.log('<GameStartScreen /> - isSubscribed', isSubscribed)
+  
   return(
     <div className="inline-flex h-full w-full justify-center bg-transparent bg-opacity-95 p-4">
       

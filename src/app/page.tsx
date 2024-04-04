@@ -2,8 +2,6 @@ import { FetchRedirectToken } from "@/components";
 import Canvas from "@/components/Canvas";
 import { durations } from "@/constants/durations";
 
-
-
 export default function Home() {
 
   return (

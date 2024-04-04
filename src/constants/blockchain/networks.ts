@@ -3,6 +3,17 @@ import type { ActiveChain } from '@/types';
 
 export const supportedNetworkIds = [foundry.id, sepolia.id] as const;
 
+export function chainById(chainId: number): ActiveChain['chain'] {
+    try {
+      const network = enabledNetworks.find((chain) => chain.chainId == chainId);
+      if (!network) throw new Error("network not supported");
+      return network.chain;
+    } catch (e) {
+      console.error(`unsupported network:::${chainId}`);
+      throw new Error();
+    }
+  }
+
 ///  A treasury address must exist on that network for it to be supported
 export const enabledNetworks: ActiveChain[] = [
 // {
