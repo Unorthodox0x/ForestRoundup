@@ -5,7 +5,6 @@ import {
   horizontalTiles,
   verticleTiles, 
 } from '@/constants/canvas';
-import { boardHeight, boardWidth, chunkHeight, chunkWidth } from '@/constants/board';
 import { gameSquare } from '@/constants/sprites';
 
 /**
@@ -61,17 +60,7 @@ function useCanvasSize() {
         tileHeight = gameSquare;
 
       }
-
-        
-      console.log('=================================')
-      console.log('canvasHeight',canvasHeight)
-      console.log('verticleTiles',verticleTiles)
-      console.log('tileHeight',tileHeight)
-      console.log('=================================')
-      console.log('canvasWidth',canvasWidth)
-      console.log('horizontalTiles',horizontalTiles)
-      console.log('tileWidth',tileWidth)
-    
+          
       setCanvasHeight(canvasHeight)
       setCanvasWidth(canvasWidth)
       setTileHeight(tileHeight)
