@@ -10,11 +10,12 @@ const config = {
     extend: {
       height: {
         'cameraHeight': '520px',
-        'canvasHeight': '520px',
+        'mobileCameraHeight': '100vh',
       },
       width: {
+        'accountWidth': '650px',
         'cameraWidth': '1000px',
-        'canvasWidth': '580px',
+        'mobileCameraWidth': '100vw',
       },
       fontFamily: {
         Milonga: ['Milonga', ...fontFamily.sans],

@@ -5,7 +5,7 @@ import { durations } from "@/constants/durations";
 export default function Home() {
 
   return (
-    <main className="flex flex-col h-cameraHeight w-cameraWidth">
+    <main className="flex flex-col h-screen w-screen">
       <Canvas>
        {/* Pass server components */}
         { durations.map((duration)=>

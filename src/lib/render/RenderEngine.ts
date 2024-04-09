@@ -4,9 +4,10 @@ import type {
     TerrainSpriteName,
     TerrainNames,
     ObjectSpriteNames,
-    Coordinates,
     ObjectSpriteData,
-    TerrainSpriteData
+    TerrainSpriteData,
+    TileDimensions,
+    CanvasCoordinates
 } from "@/types";
 import { chunkHeight, chunkWidth } from "@/constants/board";
 import {  gameSquare, rockOne, rockThree, rockTwo, spriteAnimationFrames, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "@/constants/sprites";
@@ -33,20 +34,10 @@ import type Board from "@/lib/map/Board";
  */
 export default class RenderEngine {
 
-	canvasWidth: number;
-	canvasHeight: number;
-
-	constructor(
-		canvasWidth: number,
-		canvasHeight: number,
-	){
-		this.canvasHeight = canvasHeight;
-		this.canvasWidth = canvasWidth;
-	}
-
 	renderBoard(
 		board: Board|null,
 		gameFrame: number,
+		tileDimensions: TileDimensions,
 		terrainCanvas: HTMLCanvasElement | null,
 		treasureCanvas: HTMLCanvasElement | null,
 		treeCanvas: HTMLCanvasElement | null,
@@ -55,29 +46,20 @@ export default class RenderEngine {
 		/// uninitialized	
 		if(!board || !terrainCanvas || !treasureCanvas || !treeCanvas || !rockCanvas ) return;
 
-		// const terrainContext = terrainCanvas.getContext('2d');
-		// const rockContext = rockCanvas.getContext('2d');
-		// const treeContext= treeCanvas.getContext('2d');
-		// rockContext?.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-		// terrainContext?.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-		// treeContext?.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
 		/// v make this a promise and resolve it all at once??? 
 		board.chunks.map((chunk) =>{
 			if(chunk.tiles.length < 1) return;
 			chunk.tiles.map((tile) => {
 				if(tile.state.length < 1) return;
 				
-				/// clear all state from single tile, before rendering all contents of that tile
-				// const canvasX = chunkWidth * chunk.coords.x * gameSquare + tile.coords.x * gameSquare;
-				// const canvasY = chunkHeight * chunk.coords.y * gameSquare + tile.coords.y * gameSquare;				
-				// RenderEngine.clearSprite(terrainCanvas, canvasX, canvasY);
-				// RenderEngine.clearSprite(treasureCanvas, canvasX, canvasY);
-				// RenderEngine.clearSprite(treeCanvas, canvasX, canvasY);
-				// RenderEngine.clearSprite(rockCanvas, canvasX, canvasY);
-
-				const canvasX = RenderEngine.getCanvasX(chunk.coords.x, tile.coords.x)
-				const canvasY = RenderEngine.getCanvasY(chunk.coords.y, tile.coords.y)
+				const canvasX = RenderEngine.getCanvasX(
+					{chunk: chunk.coords.x, tile: tile.coords.x},
+					tileDimensions,
+				)
+				const canvasY = RenderEngine.getCanvasY(
+					{chunk: chunk.coords.y, tile: tile.coords.y},
+					tileDimensions,
+				)
 
 				tile.state.map((value, index) => {
 					if(index === 0){ 
@@ -93,7 +75,7 @@ export default class RenderEngine {
 						if(renderState !== renderStateOne && renderState !== renderStateTwo) return;  /// no update to terrain on this frame 
 
 						const sprite = RenderEngine.getSprite(value.slice(0, -1) as TerrainNames, terrainSpriteName);
-						RenderEngine.drawSprite(terrainCanvas, renderState, sprite, { canvasX, canvasY }) 
+						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY }) 
 							/// ^ this will become generic draw
 					}
 					
@@ -109,7 +91,7 @@ export default class RenderEngine {
 							/// *** Draw Treasure  *** ///
 							sprite = RenderEngine.getSprite(value);
 							/// clear previous
-							RenderEngine.drawSprite(treasureCanvas, renderStateOne, sprite, { canvasX, canvasY })
+							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX, canvasY })
 							break;
 
 
@@ -120,7 +102,7 @@ export default class RenderEngine {
         					/// *** Draw Rocks Only once on map generation  *** ///
       						if(gameFrame !== 1) break; 
 							sprite = RenderEngine.getSprite(value);
-							RenderEngine.drawSprite(rockCanvas, renderStateOne, sprite, { canvasX, canvasY })
+							RenderEngine.drawSprite(rockCanvas, tileDimensions, renderStateOne, sprite, { canvasX, canvasY })
 							break;
 
 						case treeOne:
@@ -130,7 +112,7 @@ export default class RenderEngine {
 							if(renderState !== renderStateOne && renderState !== renderStateTwo) return;  /// no update to terrain on this frame 
 							sprite = RenderEngine.getSprite(value); /// [ Ex. TreeOne: { spriteName, src, frames:[]  } ]
 
-							RenderEngine.drawSprite(treeCanvas, renderState, sprite, { canvasX, canvasY });
+							RenderEngine.drawSprite(treeCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY });
 							break;
 
 						default:
@@ -149,10 +131,11 @@ export default class RenderEngine {
 	 */
 	static drawSprite(
 		canvas:HTMLCanvasElement, 
+		tileDimensions: TileDimensions,
 		renderState: RenderStateOne | RenderStateTwo,
 		sprite: ObjectSpriteData | TerrainSpriteData | undefined ,
 		currentCanvasLocation: { canvasX:number, canvasY:number },
-		prevCanvasLocation?: { canvasX:number, canvasY:number } /// only for players
+		prevCanvasLocation?: { canvasX:number, canvasY:number }, /// only for players
 	){
 		if(!sprite) return;
 
@@ -171,17 +154,17 @@ export default class RenderEngine {
 			if(prevCanvasLocation){
 				/// for enemies and players			
 				context.clearRect(
-					prevCanvasLocation?.canvasX*2, 
-					prevCanvasLocation?.canvasY*2, 
-					gameSquare*2, /// width
-					gameSquare*2 /// height
+					prevCanvasLocation?.canvasX, 
+					prevCanvasLocation?.canvasY, 
+					tileDimensions.width, /// width
+					tileDimensions.height /// height
 				);
 			} else {
 				context.clearRect(
-					currentCanvasLocation.canvasX*2, 
-					currentCanvasLocation.canvasY*2, 
-					gameSquare*2, /// width
-					gameSquare*2 /// height
+					currentCanvasLocation.canvasX, 
+					currentCanvasLocation.canvasY, 
+					tileDimensions.width, /// width
+					tileDimensions.height /// height
 				);
 			}
 			
@@ -189,8 +172,9 @@ export default class RenderEngine {
 			context.drawImage(tileImage,
 				frameCoords.x, frameCoords.y, /// section of sprite sheet
 				gameSquare, gameSquare, /// [ sprite sheets are 32x32 ]
-				currentCanvasLocation.canvasX*2, currentCanvasLocation.canvasY*2, // location on canvas
-				gameSquare*2, gameSquare*2 /// area on canvas
+				currentCanvasLocation.canvasX, currentCanvasLocation.canvasY, // location on canvas
+				tileDimensions.width, /// width
+				tileDimensions.height /// height
 			);
 		});
 	}
@@ -206,12 +190,23 @@ export default class RenderEngine {
 	 * 	
 	 * BY HOW MUCH DISTANCE SHOULD A MOVEMENT IN 
 	 * 	SOME DIRECTION MODIFY CANVASX && CANVASY OF CHAR
+	 * 
+	 * 
+	 * THIS METHOD HERE NEEDS TO BE ADAPTED TO TAKE IN TILE DIMENSIONS AS INPUT.... 
+	 * CURRENTLY IT IS USING GAMESQUARE
+	 * WHICH IS INVALID 	
 	 */
-	static getCanvasX(chunk:Coordinates['x'|'y'], tile:Coordinates['x'|'y']){
-		return chunk * chunkWidth * gameSquare + tile * gameSquare;
+	static getCanvasX(
+		location:CanvasCoordinates,
+		dimensions: TileDimensions, 
+	){
+		return (location.chunk * chunkWidth + location.tile) * dimensions.width + 5;
 	}
-	static getCanvasY(chunk:Coordinates['x'|'y'], tile:Coordinates['x'|'y']){
-		return chunk * chunkHeight * gameSquare + tile * gameSquare;
+	static getCanvasY(
+		location:CanvasCoordinates,
+		dimensions: TileDimensions, 
+	){
+		return (location.chunk * chunkHeight + location.tile) * dimensions.height;
 	}
 
 	/**

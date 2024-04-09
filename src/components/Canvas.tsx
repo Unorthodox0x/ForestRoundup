@@ -1,9 +1,9 @@
 'use client'
 import { useContext, type ReactNode } from "react";
 import { GameContext } from "@/context/Game";
-import { gameOver, startGame } from "@/constants/game";
-import { AccountSettings, GameOverScreen, GameScreen, GameStartScreen } from "@/components";
-import { SessionContext } from '@/context';
+import { gameOver, paused, startGame } from "@/constants/game";
+import { GameOverScreen, GameScreen, GameStartScreen, PauseScreen } from "@/components";
+
 
 /**
  * The canvas itself represents a psuedo space. 
@@ -14,31 +14,26 @@ export type GameScreenProps = {
   canvasHeight:number,
   canvasWidth:number
 }
-export default function Canvas({children}:{children: ReactNode[]}) {
-
+export default function Canvas({ children }:{ children: ReactNode }) {
   
-  /// hide account settings if isMobile, 
-  
-  const { walletAddress } = useContext(SessionContext);
   const { gameState } = useContext(GameContext);
 
   /**
    * a "canvas" div wraps canvas to hide sections of map play is not currently on
    */
   return(
-    <>
-      { walletAddress ? (
-        <AccountSettings />
-      ): null }
+    <div className="flex h-screen items-center self-center">
       { gameState.current === startGame ? (
         <GameStartScreen >
           {children} {/* Pass down server components - buttons containing internal server actions */}
         </GameStartScreen>
       ): gameState.current === gameOver ? (
         <GameOverScreen />
-      ):
+      ): gameState.current === paused ? (
+        <PauseScreen /> 
+      ): 
         <GameScreen />
       }
-    </>
+    </div>
   );
 }

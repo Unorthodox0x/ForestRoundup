@@ -1,6 +1,4 @@
-import type { BoardLocation, EnemyDirection, PlayerDirection, Enemy, Player, Coordinates } from "@/types";
-
-import { gameSquare } from "@/constants/sprites";
+import type { BoardLocation, EnemyDirection, PlayerDirection, Enemy, Player, Coordinates, TileDimensions } from "@/types";
 import { renderStateOne, renderStateTwo } from "@/constants/canvas";
 import { boardWidth, bottomChunkBoundary, bottomMapBoundary, chunkWidth, lastTileIndex, rightChunkBoundary, rightMapBoundary } from "@/constants/board";
 import { 
@@ -29,6 +27,7 @@ export default class Character {
 	/// total width of global canvas, ref passed down from global state
 	canvasWidth: number;
 	canvasHeight: number;
+	tileDimensions: TileDimensions
 
 	/// create enemies when initializing board
 	constructor(
@@ -39,6 +38,7 @@ export default class Character {
 		canvas: HTMLCanvasElement,
 		canvasWidth: number,
 		canvasHeight: number,
+		tileDimensions: TileDimensions,
 	){
 		this.id = id;
 		this.charType = charType;
@@ -47,17 +47,19 @@ export default class Character {
 
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
-
+		this.tileDimensions = tileDimensions;
+		
 		// console.log('enemy - enemyDirection', enemyDirection)
 		const chunk = Chunk.indexToCoords(location.chunk)
 		const tile = Tile.indexToCoords(location.tile);
 
-		this.canvasX = RenderEngine.getCanvasX(chunk.x, tile.x);
-		this.canvasY = RenderEngine.getCanvasY(chunk.y, tile.y);
+		this.canvasX = RenderEngine.getCanvasX({chunk: chunk.x, tile: tile.x}, tileDimensions);
+		this.canvasY = RenderEngine.getCanvasY({chunk: chunk.y, tile: tile.y}, tileDimensions);
 
 		/// [== spawn ==] draw character
 		RenderEngine.drawSprite(
 			canvas, 
+			this.tileDimensions,
 			renderStateOne, 
 			RenderEngine.getSprite(this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY }
@@ -79,19 +81,19 @@ export default class Character {
 		switch(this.direction){
 			case enemyUp:
 			case playerUp:
-				this.playYMove(canvas, -gameSquare); // increment down to 0 at top of screen
+				this.playYMove(canvas, -this.tileDimensions.height); // increment down to 0 at top of screen
 				break;
 			case enemyDown:
 			case playerDown:
-				this.playYMove(canvas, gameSquare);
+				this.playYMove(canvas, this.tileDimensions.height);
 				break;
 			case enemyLeft:
 			case playerLeft:
-				this.playXMove(canvas, -gameSquare); // increment down to 0 at left of screen
+				this.playXMove(canvas, -this.tileDimensions.width); // increment down to 0 at left of screen
 				break;
 			case enemyRight:
 			case playerRight:
-				this.playXMove(canvas, gameSquare);
+				this.playXMove(canvas, this.tileDimensions.width);
 				break;
 			default:
 				break;
@@ -251,6 +253,7 @@ export default class Character {
 		 /// a stagger frame to produce an animation effect
 		RenderEngine.drawSprite(
 			canvas, 
+			this.tileDimensions,
 			renderStateTwo, 
 			RenderEngine.getSprite(this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY }
@@ -258,6 +261,7 @@ export default class Character {
 		setTimeout(()=> {
 			RenderEngine.drawSprite(
 				canvas, 
+				this.tileDimensions,
 				renderStateOne,
 				RenderEngine.getSprite(this.direction),
 				{ canvasX: this.canvasX, canvasY: this.canvasY }
@@ -279,6 +283,7 @@ export default class Character {
 		this.canvasX += distance/2;
 		RenderEngine.drawSprite(
 			canvas, 
+			this.tileDimensions,
 			renderStateTwo,
 			RenderEngine.getSprite(this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY },
@@ -290,6 +295,7 @@ export default class Character {
 			this.canvasX += distance/2;
 			RenderEngine.drawSprite(
 				canvas, 
+				this.tileDimensions,
 				renderStateOne, 
 				RenderEngine.getSprite(this.direction),
 				{ canvasX: this.canvasX, canvasY: this.canvasY },
@@ -305,6 +311,7 @@ export default class Character {
 		this.canvasY += distance/2; /// place on canvas before movement 'where to clear'
 		RenderEngine.drawSprite(
 			canvas, 
+			this.tileDimensions,
 			renderStateTwo, 
 			RenderEngine.getSprite(this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY },
@@ -315,11 +322,12 @@ export default class Character {
 			const prevY2 = this.canvasY; /// place on canvas before movement 'where to clear'
 			this.canvasY += distance/2;
 			RenderEngine.drawSprite(
-			canvas, 
-			renderStateOne,
-			RenderEngine.getSprite(this.direction),
-			{ canvasX: this.canvasX, canvasY: this.canvasY },
-			{ canvasX: this.canvasX, canvasY: prevY2 },
+				canvas, 
+				this.tileDimensions,
+				renderStateOne,
+				RenderEngine.getSprite(this.direction),
+				{ canvasX: this.canvasX, canvasY: this.canvasY },
+				{ canvasX: this.canvasX, canvasY: prevY2 },
 			) /// finish move
 		}, 100);
     }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, createContext, useContext, type ReactElement, type ReactNode } from 'react';
-// import handleStart from '@/lib/handleStart';
 import { GameContext } from '@/context/Game';
 import type { IControllerContext } from '@/types';
 import { playerDown, playerLeft, playerRight, playerUp } from '@/constants/zod/input';
@@ -15,7 +14,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 	/** Wherever the board is updated, must update boardRef.current */
 	const { walletAddress,isSubscribed } = useContext(SessionContext);
-  	const { canvasHeight, canvasWidth } = useCanvasSize();
+  	const { isMobile } = useCanvasSize();
 	const { 
 		gameState,
 		setGameState,
@@ -53,21 +52,6 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 				!treeCanvas?.current|| !rockCanvas?.current
 			) return;
 
-			//// RESET ALL CANVAS CONTEXT BEFORE START NEW
-	        const enemyContext = enemyCanvas.current?.getContext('2d')
-	        enemyContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-	        const playerContext = playerCanvas.current?.getContext('2d')
-	        playerContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-	        const terrainContext = terrainCanvas.current?.getContext('2d')
-	        terrainContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-	        const treasureContext = treasureCanvas.current?.getContext('2d')
-	        treasureContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-	        const treeContext = treeCanvas.current?.getContext('2d')
-	        treeContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-	        const rockContext = rockCanvas.current?.getContext('2d')
-	        rockContext?.clearRect(0, 0, canvasWidth, canvasHeight);
-
-
 			console.log('loaded::: initialize game')
 			eventHandler.current?.handleStart(
 				playerCanvas.current, ///1st player context is unique because of being located in this function scope...?
@@ -77,6 +61,38 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 		}, 50)
 	}
+
+	/**
+	 * [ === Mobile controls === ]
+	 */
+	function handleDeviceOrientation(e:DeviceOrientationEvent) {
+		const { beta:yTilt, gamma:xTilt } = e;
+    	if( !yTilt || !xTilt || !boardRef.current || !playerRef.current || !playerCanvas?.current) return
+
+   		if (yTilt > 90) {
+		    // Tilted backward
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);    
+		}
+
+		if (yTilt < -90) {
+		    // Tilted forward
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
+		}
+
+		if (xTilt > 90) {
+		    // Tilted to the right
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
+		}
+
+		if (xTilt < -90) {
+		    // Tilted to the left
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
+		}
+    }
 
 
 	function handleKeyDown(e:KeyboardEvent){
@@ -106,7 +122,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 			const playerContext = playerCanvas.current.getContext('2d');
 			if(!playerContext) return;
 			
-			// console.log('~~~ PLAYER EVENT FROM INPUT ~~~');
+			// console.log('~~~ PLAYER INPUT EVENT ~~~');
 			switch(e.code){
 				case 'Space':
 					// console.log('~~~ PAUSE EVENT ~~~', gameState);
@@ -141,9 +157,16 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
     /** initialize input detector */
 	useEffect(()=>{
+		if(isMobile) return;
 		window.addEventListener('keydown', handleKeyDown);
 		/** Cleanup - to prevent multiple listeners */
 		return () => window.removeEventListener('keydown', handleKeyDown);
+	})
+	useEffect(()=>{
+		if(!isMobile) return;
+	    window.addEventListener('deviceorientation', handleDeviceOrientation);
+		/** Cleanup - to prevent multiple listeners */
+      	return () => window.removeEventListener('deviceorientation', handleDeviceOrientation);
 	})
 
 	return (

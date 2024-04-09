@@ -14,7 +14,7 @@ import {
 import { enemyDirection, playerDown } from "@/constants/zod/input";
 import Chunk from "@/lib/map/Chunk";
 import Character from "@/lib/chars/Character";
-import type { BoardLocation, EnemyDirection, TileState } from "@/types";
+import type { BoardLocation, EnemyDirection, TileDimensions, TileState } from "@/types";
 import type EventHandler from "../events/EventHandler";
 import { enemyCount, enemyType } from "@/constants/game";
 
@@ -27,9 +27,11 @@ export default class Board {
 	eventHandler: EventHandler;
 	enemyCanvas: HTMLCanvasElement;
 	treasureCanvas: HTMLCanvasElement;
+	
 	canvasWidth: number;
 	canvasHeight: number;
-
+	tileDimensions: TileDimensions
+	
 	enemies: Character[];
 	chunks: Chunk[]; /// useContext will access and manipulate this value
 	treasure: BoardLocation;
@@ -39,7 +41,8 @@ export default class Board {
 		enemyCanvas: HTMLCanvasElement,
 		treasureCanvas: HTMLCanvasElement,
 		canvasWidth: number,
-		canvasHeight: number
+		canvasHeight: number,
+		tileDimensions: TileDimensions,
 	){
 		this.eventHandler = eventHandler; // moves enemies
 		this.enemyCanvas = enemyCanvas;
@@ -47,6 +50,7 @@ export default class Board {
 
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
+		this.tileDimensions = tileDimensions;
 
 		this.enemies = [];
 		this.chunks = [];
@@ -115,7 +119,8 @@ export default class Board {
 				location, 
 				this.enemyCanvas, 
 				this.canvasWidth, 
-				this.canvasHeight
+				this.canvasHeight,
+				this.tileDimensions
 			);
 		});
 	}

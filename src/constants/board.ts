@@ -6,8 +6,6 @@ export const defaultCoords = { x: 0, y: 0 }; /// initialzer value for many objec
 
 export const battleAnimation = 'BattleAnimation' as const;
 export const obstacleSquares = [treeOne, treeTwo, rockOne, rockTwo, rockThree];
-// export const obstacleSet = new Set([obstacleSquares])
-
 export const treeSquares = [treeOne, treeTwo];
 export const rockSquares = [rockOne, rockTwo, rockThree];
 export const treasureSquares = [treasureOne,treasureTwo,treasureThree];

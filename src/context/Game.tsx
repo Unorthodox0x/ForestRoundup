@@ -14,7 +14,7 @@ import RenderEngine from '@/lib/render/RenderEngine';
 export const GameContext = createContext<IGameContext>({} as IGameContext);
 export const GameProvider = ({ children }: { children: ReactNode }): ReactElement | null => {
   
-  const { canvasHeight, canvasWidth } = useCanvasSize();
+  const { canvasHeight, canvasWidth, tileHeight, tileWidth } = useCanvasSize();
   
   const [score, setScore] = useState(0);
   const initialFrame = 0;
@@ -76,28 +76,24 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
    */
   useEffect(() => {
         
+    const renderer = new RenderEngine();
+
     let animationId:number;
-    // calling return within this scope of loop breaks the game loop
-    // instead the gameState is used to prevent triggering of updates
-    // without exiting this loop
 
     setEventHandlerRef(  
-      /// if the EventHandler were passed game state, 
-      /// the state would need to be updated in the ref in board, not here..?
       new EventHandler(  
         setBoardRef, 
         setScore,
         setGameState,
         setPlayerRef,
         canvasWidth,
-        canvasHeight
+        canvasHeight,
+        { height: tileHeight, width: tileWidth },
       ))
 
-    const renderer = new RenderEngine(
-      canvasWidth,
-      canvasHeight,
-    );
-
+    // calling return within this scope of loop breaks the game loop
+    // instead the gameState is used to prevent triggering of updates
+    // without exiting this loop
     const gameLoop = () => {
       
       /// on each render loop increment current game frame by 1 
@@ -111,6 +107,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
       renderer.renderBoard(
         boardRef.current,
         gameFrame.current,
+        { height:tileHeight, width:tileWidth },
         terrainCanvas.current, /// possible that relic is left over after game ends, 
         treasureCanvas.current,
         rockCanvas.current,
@@ -153,7 +150,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
     gameLoop()
     
     return () => window.cancelAnimationFrame(animationId)
-  },[canvasHeight, canvasWidth])
+  },[canvasHeight, canvasWidth,  tileHeight, tileWidth])
 
   return (
     <GameContext.Provider 

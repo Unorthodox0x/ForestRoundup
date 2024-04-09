@@ -1,6 +1,6 @@
 import Board from '@/lib/map/Board';
 import { enemyType, gameOver, paused, playerType, running } from '@/constants/game';
-import type { EnemyDirection, GameStates, IGameContext, PlayerDirection } from "@/types";
+import type { EnemyDirection, GameStates, IGameContext, PlayerDirection, TileDimensions } from "@/types";
 import Character from "@/lib/chars/Character";
 import { originChunk, originSquare } from '@/constants/board';
 import { playerDown } from '@/constants/zod/input';
@@ -17,7 +17,9 @@ export default class EventHandler {
 
 	canvasHeight: number;
 	canvasWidth: number;
+	tileDimensions: TileDimensions
 
+	
 	constructor(
 		setBoardRef: IGameContext['setBoardRef'],
 		setScore: IGameContext['setScore'],
@@ -25,6 +27,7 @@ export default class EventHandler {
 		setPlayerRef: IGameContext['setPlayerRef'],
 		canvasWidth: number,
 		canvasHeight: number,
+		tileDimensions: TileDimensions,
 	){
 		this.setGameState = setGameState;
 		this.setScore = setScore;
@@ -33,6 +36,7 @@ export default class EventHandler {
 
 		this.canvasHeight = canvasHeight;
 		this.canvasWidth = canvasWidth;
+		this.tileDimensions = tileDimensions;
 	}
 
 	handleStart(
@@ -47,7 +51,8 @@ export default class EventHandler {
 				enemyCanvas, 
 				treasureCanvas, 
 				this.canvasWidth, 
-				this.canvasHeight
+				this.canvasHeight,
+				this.tileDimensions
 			);
 			
 			board.initialize(); /// initialize board with global enemy context
@@ -63,6 +68,7 @@ export default class EventHandler {
 					playerCanvas,
 					this.canvasWidth,
 					this.canvasHeight,
+					this.tileDimensions
 				)
 			);
 
