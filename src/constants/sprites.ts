@@ -24,8 +24,7 @@ export const treasureTwo = 'TreasureTwo' as const;
 export const treasureThree = 'TreasureThree' as const;
 
 /// each terrain sprite sheet is 320px x 64px, where a single tile is 32px
-export const numberTerrainTiles = 10;
-
+export const numberTerrainTiles = 10 as const;
 export const objectSources: ObjectSpriteSources = {
 	/// player movement direction
 	playerDown: {
@@ -192,7 +191,7 @@ export const loadTerrainSprites = ():TerrainSprites => {
 		terrainSprites[spriteKey] = Array.from({ length : terrain.variations }, 
 			(_, variationIndex) => {	
 				return {
-					spriteName: `${spriteKey}${variationIndex}`,
+					spriteName: `${spriteKey}${variationIndex}`, /// `${Forest}{0}`
 					src: value.src,
 
 					/// frame calculation is incorrect for terrain

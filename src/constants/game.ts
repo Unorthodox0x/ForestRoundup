@@ -7,8 +7,11 @@ export const gameStates = [mount, startGame, running, paused, gameOver];
 
 /// game events to trigger on character movement
 export const collectTreasure = "Collect Treasure" as const; /// player movement into square with treasure
-export const movePlayer = "MovePlayer" as const; /// normal player movement into open square
+export const movePlayer = "Move Player" as const; /// normal player movement into open square
 export const moveEnemy = 'Move Enemy' as const;
 
+export const enemyType = "enemy" as const;
+export const playerType = "player" as const;
+
 export const initialFrame = 0;
-export const enemyCount = 12;
+export const enemyCount = 15; /// this at 0 'turns off' enemies, causing them not to spawn

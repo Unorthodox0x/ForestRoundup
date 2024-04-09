@@ -10,8 +10,15 @@ import { SessionContext } from '@/context';
  * The items on that canvas or described entirely by the current state
  *  -- The canvas must access the current game state when deciding how to draw/render content
  */
+export type GameScreenProps = {
+  canvasHeight:number,
+  canvasWidth:number
+}
 export default function Canvas({children}:{children: ReactNode[]}) {
 
+  
+  /// hide account settings if isMobile, 
+  
   const { walletAddress } = useContext(SessionContext);
   const { gameState } = useContext(GameContext);
 
@@ -25,7 +32,7 @@ export default function Canvas({children}:{children: ReactNode[]}) {
       ): null }
       { gameState.current === startGame ? (
         <GameStartScreen >
-          {children} {/* Pass down server components */}
+          {children} {/* Pass down server components - buttons containing internal server actions */}
         </GameStartScreen>
       ): gameState.current === gameOver ? (
         <GameOverScreen />

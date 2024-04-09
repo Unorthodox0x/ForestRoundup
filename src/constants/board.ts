@@ -4,9 +4,6 @@ import { rockOne, rockThree, rockTwo, treasureOne, treasureThree, treasureTwo, t
 export const defaultPlayerSq = playerDown;
 export const defaultCoords = { x: 0, y: 0 }; /// initialzer value for many objects
 
-
-export const fireSq = 'f' as const;
-export const enemySquare = 'enemy' as const;
 export const battleAnimation = 'BattleAnimation' as const;
 export const obstacleSquares = [treeOne, treeTwo, rockOne, rockTwo, rockThree];
 // export const obstacleSet = new Set([obstacleSquares])

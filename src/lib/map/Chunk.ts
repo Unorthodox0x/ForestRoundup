@@ -13,23 +13,11 @@ export default class Chunk {
 		/// select random terrain from terrain array		
 		this.terrain = terrainTypes[Math.floor( Math.random()**2 * terrainTypes.length )]!;
 		this.coords = Chunk.indexToCoords(chunkIndex);
-		this.tiles = [];
-	}
-
-	/**
-	 * This function executes loop to generate all games 
-	 * 	tiles for a single chunk
-	 */
-	initialize(){
-		/// generate all tiles for single chunk
-		 /// set tiles this class store
+		
+		/// create && add tiles to array of all Tiles to store in chunk
 		this.tiles = Array.from({ length: chunkLength }, (_, index) => {
-			const tile = new Tile(this.coords, index);
-			return tile.initialize(this.terrain);
-			/// add tile to array of all Tiles to store in chunk
+			return new Tile(this.terrain, this.coords, index);
 		});
-
-		return this; /// pass chunk ref back to parent board
 	}
 
 	getTile(tileIndex:number|undefined){

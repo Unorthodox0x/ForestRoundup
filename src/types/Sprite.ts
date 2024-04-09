@@ -3,7 +3,6 @@ import type { gameOverCanvas, gameStartCanvas } from "@/constants/canvas";
 import type { enemyDirection, playerDirection } from "@/constants/zod/input";
 import type { terrainTypes } from "@/constants/sprites";
 import type { Coordinates } from "./Board";
-import type { StaticImageData } from "next/image";
 
 export type EnemyDirection = typeof enemyDirection[number];
 export type PlayerDirection = typeof playerDirection[number];

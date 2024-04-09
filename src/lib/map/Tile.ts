@@ -16,17 +16,13 @@ export default class Tile {
 	}
 
 	constructor(
+		terrain: TerrainNames, /// parent chunk's terrain
 		parent: Coordinates,
 		tileIndex: number,
 	){
 		this.chunk = parent;
 		this.coords = Tile.indexToCoords(tileIndex);
-		this.state = [];
-	}
 
-	initialize(
-		terrain: TerrainNames, /// parent chunk's terrain
-	){
 		/// pick a random terrain from terrainTypes 
 		/// &&
 		/// a random number 1-10, higher likelyhood of lower numbers
@@ -34,8 +30,7 @@ export default class Tile {
 		const terrainSpriteIndex = Math.floor((Math.random() ** 2) * 10);
 		const spriteName = spriteAnimationFrames[terrain][terrainSpriteIndex]!.spriteName;
 
-		this.addState(spriteName)
-		return this; /// pass ref back to parent chunk
+		this.state = [spriteName];
 	}
 	
 	clearState(){ this.state = []; }

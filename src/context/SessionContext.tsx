@@ -1,7 +1,7 @@
 'use client';
 
 import { createPublicClient, http } from 'viem'
-import { createContext, useRef, useEffect, useState, type ReactElement, type ReactNode } from 'react';
+import { createContext, useState, type ReactElement, type ReactNode } from 'react';
 import type { Address, ISessionContext, SupportedChain } from "@/types";
 
 import { SubscriptionLedgerAbi } from '@/constants/blockchain/abi';

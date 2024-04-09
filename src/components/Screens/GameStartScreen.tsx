@@ -1,17 +1,17 @@
-'use client'
 import { useContext, type ReactNode } from "react";
 import { GameContext } from "@/context";
-import { canvasHeight, canvasWidth, gameStartCanvas } from '@/constants/canvas';
+import { gameStartCanvas } from '@/constants/canvas';
 import { SessionContext } from "@/context";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { GameScreenProps } from "../Canvas";
+import useCanvasSize from '@/lib/render/useCanvasSize';
 
-export default function GameStartScreen({ children }: {children: ReactNode[] }) {
+export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
+
+  const { canvasHeight, canvasWidth } = useCanvasSize();
 
 	const { gameStartScreen } =  useContext(GameContext);
   const { walletAddress, isSubscribed } = useContext(SessionContext);
-
-
-  console.log('<GameStartScreen /> - isSubscribed', isSubscribed)
   
   return(
     <div className="inline-flex h-full w-full justify-center bg-transparent bg-opacity-95 p-4">

@@ -12,14 +12,11 @@ import {
     chunkLength,
 } from "@/constants/board";
 import { enemyDirection, playerDown } from "@/constants/zod/input";
-import Enemy from "@/lib/chars/Enemy";
 import Chunk from "@/lib/map/Chunk";
-import type { BoardLocation, EnemyDirection } from "@/types";
-import RenderEngine from "@/lib/render/RenderEngine";
-import Controller from "@/lib/input/Controller";
+import Character from "@/lib/chars/Character";
+import type { BoardLocation, EnemyDirection, TileState } from "@/types";
 import type EventHandler from "../events/EventHandler";
-import { enemyCount } from "@/constants/game";
-import { canvasHeight, canvasWidth } from "@/constants/canvas";
+import { enemyCount, enemyType } from "@/constants/game";
 
 /** 
  * This class is stored in a useRef hook 
@@ -27,32 +24,36 @@ import { canvasHeight, canvasWidth } from "@/constants/canvas";
  */	
 export default class Board {
 
-	terrainCanvas: HTMLCanvasElement|null;
-	enemyCanvas: HTMLCanvasElement|null;
-	treasureCanvas: HTMLCanvasElement|null;
 	eventHandler: EventHandler;
+	enemyCanvas: HTMLCanvasElement;
+	treasureCanvas: HTMLCanvasElement;
+	canvasWidth: number;
+	canvasHeight: number;
 
-	enemies: Enemy[];
+	enemies: Character[];
 	chunks: Chunk[]; /// useContext will access and manipulate this value
 	treasure: BoardLocation;
 
 	constructor(
-		terrainCanvas: HTMLCanvasElement,
+		eventHandler: EventHandler,
 		enemyCanvas: HTMLCanvasElement,
 		treasureCanvas: HTMLCanvasElement,
-		eventHandler: EventHandler,
+		canvasWidth: number,
+		canvasHeight: number
 	){
-		this.terrainCanvas = terrainCanvas;
-		this.enemyCanvas = enemyCanvas;
-		this.treasureCanvas = treasureCanvas; 
 		this.eventHandler = eventHandler; // moves enemies
+		this.enemyCanvas = enemyCanvas;
+		this.treasureCanvas = treasureCanvas;
+
+		this.canvasWidth = canvasWidth;
+		this.canvasHeight = canvasHeight;
 
 		this.enemies = [];
 		this.chunks = [];
 		this.treasure = { chunk: 0, tile:0 } /// initialze default, will be upated when board fully generated
 	}
 
-	async initialize(){
+	initialize(){
 		this.generateChunks();
 
 		/**
@@ -69,7 +70,9 @@ export default class Board {
 		 * set player at origin during board initialization
 		 */
 		const tile = this.chunks[originChunk]!.tiles[originSquare]!
-		tile.addState(playerDown);
+		
+		/// TODO::: Do this initially from char class, via board.setObject() 
+		tile.addState(`${playerDown}${0}`);
 		this.chunks[originChunk]!.tiles[originSquare] = tile;
 
 		/**
@@ -84,34 +87,55 @@ export default class Board {
 		this.setTreasure(); /// set once default board is generated to prevent overwriting
 
 		/// create some number of enemies, randomly set them in board
-		await this.spawnEnemies();
+		this.spawnEnemies();
 	}
 
 	/// generate dynamic map
 	generateChunks () {
 		this.chunks = Array.from({ length: boardLength }, (_, index) => {
-			const chunk = new Chunk(index);
-			return chunk.initialize();
+			return new Chunk(index);
 		});
 	}
 
-	async spawnEnemies(){
-		if(!this.enemyCanvas) return;
-
-		for(let i=0; i < enemyCount; i++){
-
-			/** Spawn enemy by adding them to some tile's state */
-			const { direction, location } = await this.rollEnemyChunk();
-			const enemy = new Enemy(this.enemyCanvas, direction, location);
-
-			this.enemies.push(enemy);
-		}
+	getChunk(chunkIndex:number|undefined){
+		if(
+			(chunkIndex !== 0 && !chunkIndex) || 
+			chunkIndex > this.chunks.length - 1
+		) throw new Error('out of index')
+		return this.chunks[chunkIndex]!;
 	}
 
-	async rollEnemyChunk():Promise<{ 
+	spawnEnemies(){
+		this.enemies = Array.from({length: enemyCount}, (_, index) => { 
+			const { direction, location } =  this.rollEnemyChunk(index);
+			return new Character(
+				index, 
+				enemyType, 
+				direction, 
+				location, 
+				this.enemyCanvas, 
+				this.canvasWidth, 
+				this.canvasHeight
+			);
+		});
+	}
+	
+	moveEnemies(canvas: HTMLCanvasElement|null){
+		if(!canvas) return;
+		/// set modifed enemies into board state so that 
+		/// the modified values are used for next movement update
+		this.enemies = this.enemies.map((enemy)=>{
+			/// pick a random sprite direction, [ up | down | left | right ]
+			const direction = enemyDirection[Math.floor(Math.random() * 4)]!
+			return this.eventHandler.handleMove(this, enemy, direction, canvas)! as Character;
+		});
+	}
+
+
+	 rollEnemyChunk(id: number):{ 
 		direction: EnemyDirection, 
 		location: { chunk: number, tile: number } 
-	}>{
+	}{
 		/// get tile to place enemy
 		const chunkIndex = Math.floor(Math.random() * boardLength);
 		const tileIndex = Math.floor(Math.random() * chunkLength);
@@ -121,7 +145,7 @@ export default class Board {
 		if(tile && tile.state.length <= 1){
 			/// pick random direction for enemy to face
 			const direction = enemyDirection[Math.floor(Math.random()*4)]! 
-			tile.addState(direction)	
+			tile.addState(`${direction}${id}`)	
 			this.chunks[chunkIndex]!.tiles[tileIndex] = tile;
 			return {
 				direction,
@@ -129,7 +153,7 @@ export default class Board {
 			}
 		} 
 
-		return await this.rollEnemyChunk(); /// invalid, reroll
+		return this.rollEnemyChunk(id); /// invalid, reroll
 	}
 
 	/** During board generation add random # of obstacles to map */ 
@@ -158,7 +182,7 @@ export default class Board {
 		const tileIndex = Math.floor(Math.random() * chunkLength);
 		const tile = this.getChunk(chunkIndex)?.getTile(tileIndex);
 
-		/// don't set treasure if state more than terrain
+		/// don't set treasure if state contains more than terrain
 		if(!tile || tile.state.length > 1){ /// invalid chunk, reroll
 			///random coords are invalid, 
 			/// recursively retry until valid found
@@ -174,20 +198,36 @@ export default class Board {
 
 			/// select sprite animation
 			const treasure = treasureSquares[Math.floor(Math.random()*3)]!;
-			tile.state.push(treasure); /// update tile state
-			this.chunks[chunkIndex]!.tiles[tileIndex] = tile; /// update tile in class memory
 
-			/// *** Draw Treasure  *** ///
-				/// clear last
+			/// clear prev treasure from board
 			const context = this.treasureCanvas?.getContext('2d');
 			if(!context) return;
-			context.clearRect(0, 0, canvasWidth, canvasHeight)
-				/// draw new
-			RenderEngine.drawTreasure(
-				tile,
-				context,
-			);
+			context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+
+			tile.state.push(treasure); /// update tile state
+			this.chunks[chunkIndex]!.tiles[tileIndex] = tile; /// update tile in class memory
 		}
+	}
+
+	moveObject(
+		prev: BoardLocation,
+		prevState: TileState,
+		next: BoardLocation,
+		nextState: TileState,
+	){
+		/// remove object from previous tile state
+		this.chunks[prev.chunk]!.tiles[prev.tile]?.
+			removeState(prevState); 
+		this.setObject(next, nextState)
+	}
+
+	setObject(
+		next: BoardLocation,
+		state: TileState,
+	){
+		/// add object to next tile
+		this.chunks[next.chunk]!.tiles[next.tile]?.
+			addState(state);
 	}
 
 	/**
@@ -275,30 +315,6 @@ export default class Board {
 		})
 		
 		return this;
-	}
-
-	/**
-	 * apply all updates to enemies at once
-	 */
-    moveEnemies() {	
-		this.enemies = this.enemies.map(
-			(enemy) => {
-				/// pick a random sprite direction, 
-				/// up | down | left | right
-				const direction = enemyDirection[Math.floor(Math.random() * 4)]!
-				const nextTileLoc = Controller.getNextTile(enemy, direction)!;
-				const char = this.eventHandler.handleMove(this, nextTileLoc, enemy, direction) as Enemy;
-				return char;				
-			});
-    }
-
-    clearMap(){
-		this.chunks = [];
-	}
-
-	getChunk(chunkIndex:number|undefined){
-		if((chunkIndex !== 0 && !chunkIndex) || chunkIndex > this.chunks.length - 1) throw new Error('out of index')
-		return this.chunks[chunkIndex]!;
 	}
 }
 
