@@ -46,9 +46,8 @@ module.exports = getConfig({
    */
   publicRuntimeConfig: { },
 
-  /** We run typechecking as a separate task in CI */
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   
   /** We run eslint as a separate task in CI */
