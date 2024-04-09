@@ -14,7 +14,7 @@ const publicClient = createPublicClient({
 
 test('user is subscribed', async () => {
 
-	const user = '0xD0b5D90435B36099a82A633447ed5383C4923625' as Address;
+	const user = process.env?.TEST_USER_ADDRESS as Address;
 
 	/// both work
 	// const batch = 0; /// uint256 

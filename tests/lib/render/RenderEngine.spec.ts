@@ -1,10 +1,7 @@
 import {describe, expect, test} from 'vitest'
 import RenderEngine from '@/lib/render/RenderEngine';
-import Tile from '@/lib/map/Tile';
 
 import { renderStateOne, renderStateTwo } from '@/constants/canvas';
-import { defaultCoords } from '@/constants/board';
-import { field, forest, ground } from '@/constants/sprites';
 
 /// determines which background state to render, first or second
 describe('getRenderState', () => {
@@ -25,14 +22,3 @@ describe('getRenderState', () => {
 		});
 	}
 })
-
-
-describe('getSprite', () => {
-
-	const tile = new Tile(defaultCoords, 0);
-	const terrainSprites = new Set([forest, ground, field]);
-
-	const spite = RenderEngine.getSprite(tile, terrainSprites)
-
-
-});

@@ -3,7 +3,6 @@ import { GameContext } from "@/context";
 import { gameStartCanvas } from '@/constants/canvas';
 import { SessionContext } from "@/context";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { GameScreenProps } from "../Canvas";
 import useCanvasSize from '@/lib/render/useCanvasSize';
 
 export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
