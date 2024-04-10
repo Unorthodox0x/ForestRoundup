@@ -7,9 +7,10 @@ import type { Address, ISessionContext, SupportedChain } from "@/types";
 import { SubscriptionLedgerAbi } from '@/constants/blockchain/abi';
 
 import config from '@/lib/providers/wagmiConfig';
-import { useAccountEffect, useDisconnect } from 'wagmi'
+import { useAccount, useAccountEffect, useDisconnect } from 'wagmi'
 import { getSubLedger } from '@/constants/blockchain/contracts';
 import { chainById } from '@/constants/blockchain/networks';
+import { enabledNetworks } from "@/constants/blockchain/networks";
 
 export const SessionContext = createContext<ISessionContext>({} as ISessionContext);
 export const SessionProvider = ({ children }: { children: ReactNode }): ReactElement | null => {
@@ -22,6 +23,9 @@ export const SessionProvider = ({ children }: { children: ReactNode }): ReactEle
   const [connectedUser, setConnectedUser] = useState<Address|null>(null);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const { disconnect } = useDisconnect({ config });
+
+  const { chainId } = useAccount();
+  const networkSupported = !!enabledNetworks.find((net) => net.chainId === chainId)
 
   function handleDisconnect(){
     disconnect();
@@ -74,6 +78,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }): ReactEle
     <SessionContext.Provider 
       value={{ 
         handleDisconnect,
+        networkSupported,
         walletAddress: connectedUser,
         isSubscribed: isSubscribed
       }}

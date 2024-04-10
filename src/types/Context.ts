@@ -6,6 +6,7 @@ import type EventHandler from "@/lib/events/EventHandler";
 
 export type ISessionContext = {
 	walletAddress: Address | null
+	networkSupported: boolean;
 	isSubscribed: boolean | null
 	handleDisconnect: () => void,
 }

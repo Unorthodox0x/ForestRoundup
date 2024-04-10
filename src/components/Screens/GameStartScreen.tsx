@@ -12,9 +12,10 @@ export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
   const { canvasHeight, canvasWidth, isMobile } = useCanvasSize();
 
 	const { gameStartScreen } =  useContext(GameContext);
-  const { walletAddress, isSubscribed } = useContext(SessionContext);
+  const { networkSupported, walletAddress, isSubscribed } = useContext(SessionContext);
 
   const [open, setOpen] = useState<boolean>(false);
+
 
   return(
     <div className={  
@@ -41,15 +42,17 @@ export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
         ) }
 
         { /// user is connected, and subscription detected
-          !!walletAddress && isSubscribed ? (
+          networkSupported && walletAddress && isSubscribed ? (
             <StartButton />
           ): /// user is connected, and not subscribed
-          !!walletAddress && (!isSubscribed || isSubscribed === null) ? (
+          
+          networkSupported && walletAddress && (!isSubscribed || isSubscribed === null) ? (
             <div className='flex h-20 w-80 py-2 px-4 text-sm justify-between items-center bg-opacity-90 border-black border-2 bg-white rounded-lg'>
               {children}
             </div>
           ):
             <div className='flex h-20 w-60 justify-center items-center rounded-lg text-xl'>
+              {/* Not connected, or connected to unsupported network */}
               <ConnectButton />
             </div>
         }
