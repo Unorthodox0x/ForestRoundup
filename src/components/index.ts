@@ -1,29 +1,32 @@
 import AccountSettings from './Account/AccountSettings'
 
+import OptionButton from './buttons/OptionButton'
 
 import PauseScreen from './Screens/PauseScreen'
-import GameScreen from './Screens/GameScreen'
-import GameOverScreen from './Screens/GameOverScreen'
-import GameStartScreen from './Screens/GameStartScreen'
-import Canvas from './Canvas'
+import PauseButton from './buttons/PauseButton'
 
 import StartButton from './buttons/StartButton'
-import PauseButton from './buttons/PauseButton'
+import GameStartScreen from './Screens/GameStartScreen'
+import GameOverScreen from './Screens/GameOverScreen'
+
+import GameScreen from './Screens/GameScreen'
+import Canvas from './Canvas'
+
 import FetchRedirectToken from './buttons/FetchRedirectToken'
 import RedirectButton from './buttons/RedirectButton'
 
 
 export {
 	AccountSettings,
-	
+	OptionButton,
 	FetchRedirectToken,
 	RedirectButton,
 	PauseButton,
 	StartButton,
 	
+	Canvas,
 	GameScreen,
-	PauseScreen,
 	GameOverScreen,
 	GameStartScreen,
-	Canvas
+	PauseScreen,
 }

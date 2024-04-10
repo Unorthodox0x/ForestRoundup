@@ -18,11 +18,13 @@ export default function PauseScreen(){
 			/// play
 	
 	/// single solid black background
+
+
 	return(
 		<div className={
-	      isMobile 
-	        ? "inline-flex flex-col p-2 h-screen w-screen justify-center bg-transparent bg-opacity-95" 
-	        : "inline-flex flex-col h-cameraHeight w-cameraWidth justify-center bg-black bg-opacity-95 p-4"
+			isMobile 
+		        ? "inline-flex flex-col absolute h-screen w-screen justify-center bg-black bg-opacity-95 z-50" 
+		        : "inline-flex flex-col absolute h-cameraHeight w-cameraWidth justify-center bg-black bg-opacity-95 z-50"
 	    }>
 
 			<h1 className='flex h-full w-full items-end mt-6 justify-center text-6xl Milonga text-white'>

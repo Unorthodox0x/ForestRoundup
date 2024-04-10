@@ -1,9 +1,11 @@
-import { useContext, type ReactNode } from "react";
+'use client';
+
+import { useState, useContext, type ReactNode } from "react";
 import { GameContext, SessionContext } from "@/context";
 import { gameStartCanvas } from '@/constants/canvas';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import useCanvasSize from '@/lib/render/useCanvasSize';
-import {StartButton} from '@/components';
+import { StartButton, OptionButton, AccountSettings } from '@/components';
 
 export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
 
@@ -12,6 +14,7 @@ export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
 	const { gameStartScreen } =  useContext(GameContext);
   const { walletAddress, isSubscribed } = useContext(SessionContext);
 
+  const [open, setOpen] = useState<boolean>(false);
 
   return(
     <div className={  
@@ -24,6 +27,18 @@ export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
         <h1 className='text-6xl mt-8 font-Milonga font-bold'>
           Forest Roundup
         </h1>
+
+        {/* Display wallet info button - only when wallet is connected so user can disconnect if necessary */}
+        { walletAddress && <OptionButton open={open} setOpen={setOpen} /> }
+        { open && walletAddress && (
+            <div className={
+               isMobile 
+                ? "inline-flex absolute h-screen w-screen justify-center bg-black bg-opacity-95" 
+                : "inline-flex absolute h-cameraHeight w-cameraWidth justify-center bg-black bg-opacity-95"
+            }>
+              <AccountSettings /> 
+            </div>
+        ) }
 
         { /// user is connected, and subscription detected
           !!walletAddress && isSubscribed ? (

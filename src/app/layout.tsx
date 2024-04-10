@@ -4,14 +4,13 @@ import '@rainbow-me/rainbowkit/styles.css';
 import '@/styles/global.css'
 
 import { Inter } from "next/font/google";
-
 import { 
   WalletContext, 
   SessionProvider, 
   ControllerProvider, 
   GameProvider, 
 } from '@/context';
-
+import Head from 'next/head';
 //// session persistence?
 // import { headers } from 'next/headers'
 // import { cookieToInitialState } from 'wagmi'
@@ -38,6 +37,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+
+    <Head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </Head>
+
       <body className={inter.className}>
         <WalletContext>
           <SessionProvider>

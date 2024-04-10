@@ -49,7 +49,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 			if(!playerCanvas?.current || !enemyCanvas?.current || 
 				!treasureCanvas?.current || !terrainCanvas?.current ||
-				!treeCanvas?.current|| !rockCanvas?.current
+				!treeCanvas?.current || !rockCanvas?.current
 			) return;
 
 			console.log('loaded::: initialize game')
@@ -111,6 +111,11 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 			loadCanvas();
 		}
 
+		if(gameState && e.code === 'Space'){
+			// console.log('~~~ PAUSE EVENT ~~~', gameState);
+			eventHandler.current?.handlePause(gameState.current);
+		}
+
 		else if(
 			gameFrame?.current &&
 			boardRef.current?.chunks &&
@@ -119,33 +124,29 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 			playerRef.current
 		) {
 			
+			/// the pause screen means that the player canvas is not in the doc???
 			const playerContext = playerCanvas.current.getContext('2d');
-			if(!playerContext) return;
 			
 			// console.log('~~~ PLAYER INPUT EVENT ~~~');
 			switch(e.code){
-				case 'Space':
-					// console.log('~~~ PAUSE EVENT ~~~', gameState);
-					eventHandler.current?.handlePause(gameState.current);
-					break;
 				case "KeyW":
 				case "ArrowUp":
-					if(gameState.current === paused) return;
+					if(gameState.current === paused || !playerContext) return;
 					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);
 					break;
 				case "KeyS":
 				case "ArrowDown":
-					if(gameState.current === paused) return;
+					if(gameState.current === paused || !playerContext) return;
 					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
 					break;
 				case "KeyA":
 				case "ArrowLeft":
-					if(gameState.current === paused) return;
+					if(gameState.current === paused || !playerContext) return;
 					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
 					break;
 				case "KeyD":
 				case "ArrowRight":
-					if(gameState.current === paused) return;
+					if(gameState.current === paused || !playerContext) return;
 					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
 					break
 				default:

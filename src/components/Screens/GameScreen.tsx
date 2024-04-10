@@ -2,7 +2,8 @@ import { treeCanvasId, terrainCanvasId, playerCanvasId, treasureCanvasId, enemyC
 import { useContext } from "react";
 import { GameContext } from "@/context/Game";
 import useCanvasSize from '@/lib/render/useCanvasSize';
-import { PauseButton } from '@/components';
+import { PauseButton, PauseScreen } from '@/components';
+import { paused } from '@/constants/game';
 
 export default function GameScreen() {
 
@@ -14,6 +15,7 @@ export default function GameScreen() {
     treasureCanvas,
     terrainCanvas,
     treeCanvas,
+    gameState
 	} = useContext(GameContext);
 
 	return(
@@ -23,9 +25,8 @@ export default function GameScreen() {
         : "inline-flex h-cameraHeight w-cameraWidth justify-center bg-opacity-95"
     }>
 
-      { isMobile && (
-        <PauseButton />
-      ) }
+      { isMobile && ( <PauseButton /> ) }
+      { gameState.current === paused && ( <PauseScreen /> ) }
         
       <canvas
         className={

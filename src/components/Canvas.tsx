@@ -1,9 +1,8 @@
 'use client'
 import { useContext, type ReactNode } from "react";
 import { GameContext } from "@/context/Game";
-import { gameOver, paused, startGame } from "@/constants/game";
-import { GameOverScreen, GameScreen, GameStartScreen, PauseScreen } from "@/components";
-
+import { gameOver, startGame } from "@/constants/game";
+import { GameOverScreen, GameScreen, GameStartScreen } from "@/components";
 
 /**
  * The canvas itself represents a psuedo space. 
@@ -29,8 +28,6 @@ export default function Canvas({ children }:{ children: ReactNode }) {
         </GameStartScreen>
       ): gameState.current === gameOver ? (
         <GameOverScreen />
-      ): gameState.current === paused ? (
-        <PauseScreen /> 
       ): 
         <GameScreen />
       }
