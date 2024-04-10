@@ -29,7 +29,7 @@ export default function AccountSettings(){
 			<button 
 				className={
 					isMobile
-					? "flex h-6 px-1 mr-14 self-end items-center text-sm rounded-lg bg-green-800 hover:translate-x-1 hover:-translate-y-3"
+					? "flex h-6 px-1 mr-14 self-end items-center text-sm rounded-lg bg-green-800"
 					: "flex h-6 px-1 items-center text-sm rounded-lg bg-green-800 hover:translate-x-1 hover:-translate-y-3"
 				}
 				onClick={() => { handleDisconnect() }}
