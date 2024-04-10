@@ -66,7 +66,10 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	 * [ === Mobile controls === ]
 	 */
 	function handleDeviceOrientation(e:DeviceOrientationEvent) {
-		const { beta:yTilt, gamma:xTilt } = e;
+		const { beta:xTilt, gamma:yTilt } = e;
+		console.log('beta:xTilt', xTilt)
+		console.log('gamma:yTilt', yTilt)
+
     	if(!boardRef.current || !playerRef.current) return
 
    		if (yTilt && yTilt > 30) {
@@ -158,13 +161,11 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
     /** initialize input detector */
 	useEffect(()=>{
-		if(isMobile) return;
 	    window.addEventListener('deviceorientation', handleDeviceOrientation);
 		/** Cleanup - to prevent multiple listeners */
       	return () => window.removeEventListener('deviceorientation', handleDeviceOrientation);
 	})
 	useEffect(()=>{
-		if(!isMobile) return;
 		window.addEventListener('keydown', handleKeyDown);
 		/** Cleanup - to prevent multiple listeners */
 		return () => window.removeEventListener('keydown', handleKeyDown);

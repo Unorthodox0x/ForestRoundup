@@ -19,7 +19,6 @@ export default function StartButton(){
 	} = useContext(GameContext);
 
 	function handleStart(){
-	console.log('<StartButton />  ~~~~~~~~ handleStart')
 
 		/// load canvas elements into dom
 		setScore(0)
@@ -40,8 +39,6 @@ export default function StartButton(){
 			);
 		}, 50);
 	}
-
-	console.log('<StartButton /> ~~~~~~~~')
 
 	return(
 		<button
