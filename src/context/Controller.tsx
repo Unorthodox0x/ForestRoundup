@@ -69,25 +69,25 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 		const { beta:yTilt, gamma:xTilt } = e;
     	if( !yTilt || !xTilt || !boardRef.current || !playerRef.current || !playerCanvas?.current) return
 
-   		if (yTilt > 90) {
+   		if (yTilt > 30) {
 		    // Tilted backward
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);    
 		}
 
-		if (yTilt < -90) {
+		if (yTilt < -30) {
 		    // Tilted forward
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
 		}
 
-		if (xTilt > 90) {
+		if (xTilt > 30) {
 		    // Tilted to the right
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
 		}
 
-		if (xTilt < -90) {
+		if (xTilt < -30) {
 		    // Tilted to the left
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
