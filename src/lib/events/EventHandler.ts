@@ -103,12 +103,12 @@ export default class EventHandler {
 		board: Board,
 		char: Character,
 		direction:PlayerDirection|EnemyDirection,
-		canvas: HTMLCanvasElement, /// delivered from controller && enemy movement loop
+		canvas: HTMLCanvasElement|undefined|null, /// delivered from controller && enemy movement loop
 		/// contexts can be passed in here,,,
 		/// treasureContext to update treasure when it is collected
 		/// this keeps with design of taking canvas|context as input and not creating a ref in this class
     ) {	
-
+    	if(!canvas) return;
 
 
 		/// 

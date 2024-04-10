@@ -67,30 +67,30 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	 */
 	function handleDeviceOrientation(e:DeviceOrientationEvent) {
 		const { beta:yTilt, gamma:xTilt } = e;
-    	if( !yTilt || !xTilt || !boardRef.current || !playerRef.current || !playerCanvas?.current) return
+    	if(!boardRef.current || !playerRef.current) return
 
-   		if (yTilt > 30) {
+   		if (yTilt && yTilt > 30) {
 		    // Tilted backward
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);    
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
 		}
 
-		if (yTilt < -30) {
+		if (yTilt && yTilt < -30) {
 		    // Tilted forward
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
 		}
 
-		if (xTilt > 30) {
+		if (xTilt && xTilt > 30) {
 		    // Tilted to the right
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas?.current);
 		}
 
-		if (xTilt < -30) {
+		if (xTilt && xTilt < -30) {
 		    // Tilted to the left
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas?.current);
 		}
     }
 
@@ -159,15 +159,15 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
     /** initialize input detector */
 	useEffect(()=>{
 		if(isMobile) return;
-		window.addEventListener('keydown', handleKeyDown);
-		/** Cleanup - to prevent multiple listeners */
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	})
-	useEffect(()=>{
-		if(!isMobile) return;
 	    window.addEventListener('deviceorientation', handleDeviceOrientation);
 		/** Cleanup - to prevent multiple listeners */
       	return () => window.removeEventListener('deviceorientation', handleDeviceOrientation);
+	})
+	useEffect(()=>{
+		if(!isMobile) return;
+		window.addEventListener('keydown', handleKeyDown);
+		/** Cleanup - to prevent multiple listeners */
+		return () => window.removeEventListener('keydown', handleKeyDown);
 	})
 
 	return (
