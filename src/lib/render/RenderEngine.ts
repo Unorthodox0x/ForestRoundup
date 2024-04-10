@@ -200,7 +200,8 @@ export default class RenderEngine {
 		location:CanvasCoordinates,
 		dimensions: TileDimensions, 
 	){
-		return (location.chunk * chunkWidth + location.tile) * dimensions.width + 5;
+		return (location.chunk * chunkWidth + location.tile) * dimensions.width ;
+		// return (location.chunk * chunkWidth + location.tile) * dimensions.width + 5; /// this works in destop version of mobile
 	}
 	static getCanvasY(
 		location:CanvasCoordinates,
