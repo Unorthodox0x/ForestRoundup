@@ -11,6 +11,15 @@ export default function PauseButton(){
 
 	const { gameState, eventHandler } = useContext(GameContext);
 
+	/**
+	 * TODO:: There is an issue with the pause screen, 	
+	 * 	on mobile, it does not rerender the player sometimes
+	 * 	
+	 * the main game board leaves the canvas and reenters, 
+	 * 	this means the board needs to be redrawn, 
+	 * 	
+	 * currently on mobile, the method for rendering the board is sluggish
+	 */
 	function handlePress(){
 		eventHandler.current?.handlePause(gameState.current);
 	}

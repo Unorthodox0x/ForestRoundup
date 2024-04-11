@@ -12,14 +12,6 @@ export default function PauseScreen(){
 	const { walletAddress } = useContext(SessionContext);
 	const { score } =  useContext(GameContext);
 
-
-	/// TODO::: MOVE Wallet connection infor
-		/// game score, 
-			/// play
-	
-	/// single solid black background
-
-
 	return(
 		<div className={
 			isMobile 
