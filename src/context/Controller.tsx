@@ -14,7 +14,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 	/** Wherever the board is updated, must update boardRef.current */
 	const { walletAddress,isSubscribed } = useContext(SessionContext);
-  	const { isMobile } = useCanvasSize();
+  	const { canvasTop, canvasBottom, canvasLeft, canvasRight } = useCanvasSize();
 	const { 
 		gameState,
 		setGameState,
@@ -65,32 +65,38 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	/**
 	 * [ === Mobile controls === ]
 	 */
-	function handleDeviceOrientation(e:DeviceOrientationEvent) {
-		const { beta:xTilt, gamma:yTilt } = e;
-		console.log('beta:xTilt', xTilt)
-		console.log('gamma:yTilt', yTilt)
+	function handleDeviceTouch(e:TouchEvent) {
+		const deviceX = e.changedTouches[0]?.pageX
+		const deviceY = e.changedTouches[0]?.pageY		
 
-    	if(!boardRef.current || !playerRef.current) return
+		if(
+			!e.changedTouches ||!deviceX || !deviceY || 
+			!boardRef.current || !playerRef.current
+		) return;
 
-   		if (yTilt && yTilt > 30) {
+		/**
+		 * deviceY first to prioritize verticle movement
+		 */
+
+   		if (deviceY <= canvasTop) { /// top section of screen was pressed
 		    // Tilted backward
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
 		}
 
-		if (yTilt && yTilt < -30) {
+		else if (deviceY >= canvasBottom) {
 		    // Tilted forward
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
 		}
 
-		if (xTilt && xTilt > 30) {
+		else if (deviceX >= canvasRight) {
 		    // Tilted to the right
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas?.current);
 		}
 
-		if (xTilt && xTilt < -30) {
+		else if (deviceX <= canvasLeft) {
 		    // Tilted to the left
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas?.current);
@@ -161,9 +167,9 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
     /** initialize input detector */
 	useEffect(()=>{
-	    window.addEventListener('deviceorientation', handleDeviceOrientation);
+	    window.addEventListener('touchstart', handleDeviceTouch);
 		/** Cleanup - to prevent multiple listeners */
-      	return () => window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      	return () => window.removeEventListener('touchstart', handleDeviceTouch);
 	})
 	useEffect(()=>{
 		window.addEventListener('keydown', handleKeyDown);
