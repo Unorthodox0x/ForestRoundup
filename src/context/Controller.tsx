@@ -14,7 +14,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 	/** Wherever the board is updated, must update boardRef.current */
 	const { walletAddress,isSubscribed } = useContext(SessionContext);
-  	const { canvasTop, canvasBottom, canvasLeft, canvasRight } = useCanvasSize();
+  	const { canvasHeight, canvasWidth } = useCanvasSize();
 	const { 
 		gameState,
 		setGameState,
@@ -65,21 +65,30 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	/**
 	 * [ === Mobile controls === ]
 	 */
+		/**
+		 * portion of screen to detect mobile touch event
+		 */
+	  	const canvasSegments = 4; // for touch control configuration. 
+	  	const canvasVerticleSection = canvasHeight / canvasSegments
+		const canvasHorizontalSection = canvasWidth / canvasSegments
+		const canvasTop = canvasVerticleSection;
+		const canvasBottom = canvasHeight - canvasVerticleSection;
+		const canvasLeft = canvasVerticleSection;
+		const canvasRight = canvasWidth - canvasHorizontalSection;
 	function handleDeviceTouch(e:TouchEvent) {
 		const deviceX = e.changedTouches[0]?.pageX
 		const deviceY = e.changedTouches[0]?.pageY		
 
 		if(
-			!e.changedTouches ||!deviceX || !deviceY || 
+			!e.changedTouches || !deviceX || !deviceY || 
 			!boardRef.current || !playerRef.current
 		) return;
 
 		/**
 		 * deviceX first to prioritize Horizontal movement
-		 *  landscape mode is wide so fingers are naturally at far edges
+		 *  landscape mode is wide so fingers are more naturally at far edges
 		 */
-
-		else if (deviceX >= canvasRight) {
+		if (deviceX >= canvasRight) {
 		    // Tilted to the right
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas?.current);
@@ -169,14 +178,15 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
     /** initialize input detector */
 	useEffect(()=>{
+
 	    window.addEventListener('touchstart', handleDeviceTouch);
-		/** Cleanup - to prevent multiple listeners */
-      	return () => window.removeEventListener('touchstart', handleDeviceTouch);
-	})
-	useEffect(()=>{
 		window.addEventListener('keydown', handleKeyDown);
-		/** Cleanup - to prevent multiple listeners */
-		return () => window.removeEventListener('keydown', handleKeyDown);
+
+		/** Cleanup - to prevent multiple listener instances */
+      	return () => {
+      		window.removeEventListener('touchstart', handleDeviceTouch);
+			window.removeEventListener('keydown', handleKeyDown);
+      	}
 	})
 
 	return (
