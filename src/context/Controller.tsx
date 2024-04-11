@@ -75,20 +75,9 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 		) return;
 
 		/**
-		 * deviceY first to prioritize verticle movement
+		 * deviceX first to prioritize Horizontal movement
+		 *  landscape mode is wide so fingers are naturally at far edges
 		 */
-
-   		if (deviceY <= canvasTop) { /// top section of screen was pressed
-		    // Tilted backward
-			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
-		}
-
-		else if (deviceY >= canvasBottom) {
-		    // Tilted forward
-			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
-		}
 
 		else if (deviceX >= canvasRight) {
 		    // Tilted to the right
@@ -101,6 +90,19 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 			if(gameState.current === paused) return;
 			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas?.current);
 		}
+
+   		else if (deviceY <= canvasTop) { /// top section of screen was pressed
+		    // Tilted backward
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
+		}
+
+		else if (deviceY >= canvasBottom) {
+		    // Tilted forward
+			if(gameState.current === paused) return;
+			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
+		}
+
     }
 
 
