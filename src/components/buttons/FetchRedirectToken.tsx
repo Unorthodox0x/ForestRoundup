@@ -60,7 +60,7 @@ export default async function FetchRedirectToken(props: CustomComponentProps){
 	})
 	.then((data:ResponseData) => {
 		// Access the parsed JSON data
-		// console.log('Data:', data);
+		console.log('Data:', data);
 		if(!data.redirectToken) throw new Error('no response data')
 		redirectToken = data?.redirectToken;
 	})
