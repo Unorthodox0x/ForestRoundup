@@ -1,11 +1,14 @@
 import { chunkWidth } from "@/constants/board";
-import type { Coordinates, TerrainNames, TileState } from "@/types";
+import type { Coordinates, TerrainNames, TileDimensions, TileState } from "@/types";
 import { spriteAnimationFrames } from "@/constants/sprites";
+import RenderEngine from "../render/RenderEngine";
 
 export default class Tile {
 	
 	chunk: Coordinates; /// which chunk does this belong to ?? 'metadata'
 	coords: Coordinates;
+	canvasX: number;
+	canvasY: number;
 	state:  TileState[]; /// forest1 + p + t + ..
 
 	static indexToCoords(tileIndex:number){
@@ -19,10 +22,19 @@ export default class Tile {
 		terrain: TerrainNames, /// parent chunk's terrain
 		parent: Coordinates,
 		tileIndex: number,
+		tileDimensions: TileDimensions,
 	){
 		this.chunk = parent;
 		this.coords = Tile.indexToCoords(tileIndex);
 
+		this.canvasX = RenderEngine.getCanvasX(
+			{chunk: this.chunk.x, tile: this.coords.x},
+			tileDimensions,
+		)
+		this.canvasY = RenderEngine.getCanvasY(
+			{chunk: this.chunk.y, tile: this.coords.y},
+			tileDimensions,
+		)
 		/// pick a random terrain from terrainTypes 
 		/// &&
 		/// a random number 1-10, higher likelyhood of lower numbers

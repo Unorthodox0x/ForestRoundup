@@ -55,16 +55,6 @@ export default class RenderEngine {
 			if(chunk.tiles.length < 1) return;
 			chunk.tiles.map((tile) => {
 				if(tile.state.length < 1) return;
-				
-				const canvasX = RenderEngine.getCanvasX(
-					{chunk: chunk.coords.x, tile: tile.coords.x},
-					tileDimensions,
-				)
-				const canvasY = RenderEngine.getCanvasY(
-					{chunk: chunk.coords.y, tile: tile.coords.y},
-					tileDimensions,
-				)
-
 				tile.state.map((value, index) => {
 					if(index === 0){ 
 
@@ -75,7 +65,7 @@ export default class RenderEngine {
 						/// 'Forest0' || 'Ground0' || 'Field0' <-- references data created by loadTerrainSprites()
 						const terrainSpriteName = value as TerrainSpriteName;
 						const sprite = RenderEngine.getSprite(value.slice(0, -1) as TerrainNames, terrainSpriteName);
-						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY }) 
+						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY }) 
 							/// ^ this will become generic draw
 					}
 					
@@ -91,7 +81,7 @@ export default class RenderEngine {
 							/// *** Draw Treasure  *** ///
 							sprite = RenderEngine.getSprite(value);
 							/// clear previous
-							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX, canvasY })
+							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
 							break;
 
 
@@ -102,14 +92,14 @@ export default class RenderEngine {
         					/// *** Draw Rocks Only once on map generation  *** ///
       						if(gameFrame !== 1) break; 
 							sprite = RenderEngine.getSprite(value);
-							RenderEngine.drawSprite(rockCanvas, tileDimensions, renderStateOne, sprite, { canvasX, canvasY })
+							RenderEngine.drawSprite(rockCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
 							break;
 
 						case treeOne:
 						case treeTwo:
 
 							sprite = RenderEngine.getSprite(value); /// [ Ex. TreeOne: { spriteName, src, frames:[]  } ]
-							RenderEngine.drawSprite(treeCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY });
+							RenderEngine.drawSprite(treeCanvas, tileDimensions, renderState, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY });
 							break;
 
 						default:

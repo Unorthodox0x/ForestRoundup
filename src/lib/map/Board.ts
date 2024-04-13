@@ -97,7 +97,7 @@ export default class Board {
 	/// generate dynamic map
 	generateChunks () {
 		this.chunks = Array.from({ length: boardLength }, (_, index) => {
-			return new Chunk(index);
+			return new Chunk(index, this.tileDimensions);
 		});
 	}
 
