@@ -78,12 +78,11 @@ export default class RenderEngine {
 						case treasureOne:
 						case treasureTwo:
 						case treasureThree:
+							
 							/// *** Draw Treasure  *** ///
 							sprite = RenderEngine.getSprite(value);
-							/// clear previous
 							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
 							break;
-
 
 						case rockOne:
 						case rockTwo:

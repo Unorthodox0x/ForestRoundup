@@ -75,7 +75,10 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
    * Launch Render engine for Canvas
    */
   useEffect(() => {
-        
+    if(!canvasHeight||!canvasWidth||!tileHeight||!tileWidth) return; 
+    // only trigger game loop once screen size detected
+      /// this prevents multiple instances of gameLoop
+
     const renderer = new RenderEngine();
 
     let animationId:number;
