@@ -48,7 +48,6 @@ export default async function FetchRedirectToken(props: CustomComponentProps){
 			'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
 		},
 	}).then((response) => {
-		console.log('response:::%O', response);
 		if(!response ||response.status !== 200) throw new Error('invalid response')
 			try{
 				// Parse response as JSON
