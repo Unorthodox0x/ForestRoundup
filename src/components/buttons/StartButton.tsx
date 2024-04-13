@@ -10,6 +10,7 @@ export default function StartButton(){
   	const { isMobile } = useCanvasSize();
 	const {
 		eventHandler,
+		sprites,
 		playerCanvas,
 		enemyCanvas,
 		treasureCanvas,
@@ -35,7 +36,8 @@ export default function StartButton(){
 			eventHandler.current?.handleStart(
 				playerCanvas?.current,
 				enemyCanvas?.current,
-				treasureCanvas?.current
+				treasureCanvas?.current,
+				sprites.current
 			);
 		}, 50);
 	}

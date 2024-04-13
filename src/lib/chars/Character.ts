@@ -1,4 +1,4 @@
-import type { BoardLocation, EnemyDirection, PlayerDirection, Enemy, Player, Coordinates, TileDimensions } from "@/types";
+import type { BoardLocation, EnemyDirection, PlayerDirection, Enemy, Player, Coordinates, TileDimensions, AllSprites } from "@/types";
 import { renderStateOne, renderStateTwo } from "@/constants/canvas";
 import { boardWidth, bottomChunkBoundary, bottomMapBoundary, chunkWidth, lastTileIndex, rightChunkBoundary, rightMapBoundary } from "@/constants/board";
 import { 
@@ -18,12 +18,11 @@ export default class Character {
 
 	/// location in board state
 	location: BoardLocation;
-
+	spriteAnimationFrames: AllSprites;
 
 	/// location where image is drawn on screen
 	canvasX: number;
 	canvasY: number;
-
 	/// total width of global canvas, ref passed down from global state
 	canvasWidth: number;
 	canvasHeight: number;
@@ -38,6 +37,7 @@ export default class Character {
 		canvas: HTMLCanvasElement,
 		canvasWidth: number,
 		canvasHeight: number,
+		spriteAnimationFrames: AllSprites,
 		tileDimensions: TileDimensions,
 	){
 		this.id = id;
@@ -48,11 +48,12 @@ export default class Character {
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 		this.tileDimensions = tileDimensions;
+
+		this.spriteAnimationFrames = spriteAnimationFrames;
 		
 		// console.log('enemy - enemyDirection', enemyDirection)
 		const chunk = Chunk.indexToCoords(location.chunk)
 		const tile = Tile.indexToCoords(location.tile);
-
 		this.canvasX = RenderEngine.getCanvasX({chunk: chunk.x, tile: tile.x}, tileDimensions);
 		this.canvasY = RenderEngine.getCanvasY({chunk: chunk.y, tile: tile.y}, tileDimensions);
 
@@ -61,7 +62,7 @@ export default class Character {
 			canvas, 
 			this.tileDimensions,
 			renderStateOne, 
-			RenderEngine.getSprite(this.direction),
+			RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY }
 		);
 	}
@@ -255,7 +256,7 @@ export default class Character {
 			canvas, 
 			this.tileDimensions,
 			renderStateTwo, 
-			RenderEngine.getSprite(this.direction),
+			RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY }
 		) /// begin move
 		setTimeout(()=> {
@@ -263,7 +264,7 @@ export default class Character {
 				canvas, 
 				this.tileDimensions,
 				renderStateOne,
-				RenderEngine.getSprite(this.direction),
+				RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 				{ canvasX: this.canvasX, canvasY: this.canvasY }
 		) /// finish move
 		}, 100);
@@ -285,7 +286,7 @@ export default class Character {
 			canvas, 
 			this.tileDimensions,
 			renderStateTwo,
-			RenderEngine.getSprite(this.direction),
+			RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY },
 			{ canvasX: prevX1, canvasY: this.canvasY },
 		) /// start move
@@ -297,7 +298,7 @@ export default class Character {
 				canvas, 
 				this.tileDimensions,
 				renderStateOne, 
-				RenderEngine.getSprite(this.direction),
+				RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 				{ canvasX: this.canvasX, canvasY: this.canvasY },
 				{ canvasX: prevX2, canvasY: this.canvasY },
 			) /// finish move
@@ -313,7 +314,7 @@ export default class Character {
 			canvas, 
 			this.tileDimensions,
 			renderStateTwo, 
-			RenderEngine.getSprite(this.direction),
+			RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY },
 			{ canvasX: this.canvasX, canvasY: prevY1 },
 		) /// start move
@@ -325,7 +326,7 @@ export default class Character {
 				canvas, 
 				this.tileDimensions,
 				renderStateOne,
-				RenderEngine.getSprite(this.direction),
+				RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 				{ canvasX: this.canvasX, canvasY: this.canvasY },
 				{ canvasX: this.canvasX, canvasY: prevY2 },
 			) /// finish move

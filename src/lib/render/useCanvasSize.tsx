@@ -5,7 +5,7 @@ import {
   horizontalTiles,
   verticleTiles, 
 } from '@/constants/canvas';
-import { gameSquare } from '@/constants/sprites';
+import { gameSquare } from '@/constants/canvas';
 
 /**
  * This hook detects the device connecting to app

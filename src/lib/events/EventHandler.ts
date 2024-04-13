@@ -1,6 +1,6 @@
 import Board from '@/lib/map/Board';
 import { enemyType, gameOver, paused, playerType, running } from '@/constants/game';
-import type { EnemyDirection, GameStates, IGameContext, PlayerDirection, TileDimensions } from "@/types";
+import type { AllSprites, EnemyDirection, GameStates, IGameContext, PlayerDirection, TileDimensions } from "@/types";
 import Character from "@/lib/chars/Character";
 import { originChunk, originSquare } from '@/constants/board';
 import { playerDown } from '@/constants/zod/input';
@@ -43,6 +43,7 @@ export default class EventHandler {
 		playerCanvas: HTMLCanvasElement, /// ref from global state passed down, from controller, no separate ref is set in this class
 		enemyCanvas: HTMLCanvasElement, /// ref from global state passed down, only a single instance of canvas is used for all enemies
 		treasureCanvas:HTMLCanvasElement,
+		spriteAnimationFrames: AllSprites,
 	){
 		try {
 			/// generate board && player
@@ -52,7 +53,8 @@ export default class EventHandler {
 				treasureCanvas, 
 				this.canvasWidth, 
 				this.canvasHeight,
-				this.tileDimensions
+				spriteAnimationFrames,
+				this.tileDimensions,
 			);
 			
 			board.initialize(); /// initialize board with global enemy context
@@ -68,6 +70,7 @@ export default class EventHandler {
 					playerCanvas,
 					this.canvasWidth,
 					this.canvasHeight,
+					spriteAnimationFrames,
 					this.tileDimensions
 				)
 			);

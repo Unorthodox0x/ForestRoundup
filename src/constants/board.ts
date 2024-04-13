@@ -1,5 +1,20 @@
 import { playerDown } from "@/constants/zod/input";
-import { rockOne, rockThree, rockTwo, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "./sprites";
+
+export const field = 'Field' as const;
+export const forest = 'Forest' as const;
+export const ground = 'Ground' as const;
+export const terrainTypes = [forest, field, ground];
+
+export const treeOne = 'TreeOne' as const;
+export const treeTwo = 'TreeTwo' as const
+
+export const rockOne = 'RockOne' as const;
+export const rockTwo = 'RockTwo' as const;
+export const rockThree = 'RockThree' as const;
+
+export const treasureOne = 'TreasureOne' as const;
+export const treasureTwo = 'TreasureTwo' as const;
+export const treasureThree = 'TreasureThree' as const;
 
 export const defaultPlayerSq = playerDown;
 export const defaultCoords = { x: 0, y: 0 }; /// initialzer value for many objects

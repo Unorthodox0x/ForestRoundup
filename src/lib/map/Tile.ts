@@ -1,6 +1,5 @@
 import { chunkWidth } from "@/constants/board";
-import type { Coordinates, TerrainNames, TileDimensions, TileState } from "@/types";
-import { spriteAnimationFrames } from "@/constants/sprites";
+import type { AllSprites, Coordinates, TerrainNames, TileDimensions, TileState } from "@/types";
 import RenderEngine from "../render/RenderEngine";
 
 export default class Tile {
@@ -22,6 +21,7 @@ export default class Tile {
 		terrain: TerrainNames, /// parent chunk's terrain
 		parent: Coordinates,
 		tileIndex: number,
+		spriteAnimationFrames: AllSprites,
 		tileDimensions: TileDimensions,
 	){
 		this.chunk = parent;

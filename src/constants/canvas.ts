@@ -1,5 +1,7 @@
 import { boardHeight, boardWidth, chunkHeight, chunkWidth } from "./board";
-import { gameSquare } from "./sprites";
+
+/// dimensions of all sprites on sprite sheets
+export const gameSquare = 32 as const; /// 32px x 32px
 
 /// render game every x ticks
 export const terrainStaggerFrames = 200 as const;

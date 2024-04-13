@@ -1,7 +1,7 @@
 import { boardWidth, chunkLength } from "@/constants/board";
-import type { Coordinates, TerrainNames, TileDimensions } from "@/types";
+import type { AllSprites, Coordinates, TerrainNames, TileDimensions } from "@/types";
 import Tile from "@/lib/map/Tile";
-import { terrainTypes } from "@/constants/sprites";
+import { terrainTypes } from "@/constants/board";
 
 export default class Chunk {
 	
@@ -11,6 +11,7 @@ export default class Chunk {
 
 	constructor(
 		chunkIndex:number,
+		spriteAnimationFrames: AllSprites,
 		tileDimensions: TileDimensions
 	){
 		/// select random terrain from terrain array		
@@ -19,7 +20,7 @@ export default class Chunk {
 		
 		/// create && add tiles to array of all Tiles to store in chunk
 		this.tiles = Array.from({ length: chunkLength }, (_, index) => {
-			return new Tile(this.terrain, this.coords, index, tileDimensions);
+			return new Tile(this.terrain, this.coords, index, spriteAnimationFrames, tileDimensions);
 		});
 	}
 

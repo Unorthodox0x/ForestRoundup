@@ -7,10 +7,13 @@ import type {
     ObjectSpriteData,
     TerrainSpriteData,
     TileDimensions,
-    CanvasCoordinates
+    CanvasCoordinates,
+    TerrainSprites,
+    ObjectSprites,
+    AllSprites
 } from "@/types";
-import { chunkHeight, chunkWidth } from "@/constants/board";
-import {  gameSquare, rockOne, rockThree, rockTwo, spriteAnimationFrames, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "@/constants/sprites";
+import { chunkHeight, chunkWidth, rockOne, rockThree, rockTwo, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "@/constants/board";
+import { gameSquare } from "@/constants/canvas";
 import { 
 	terrainStaggerFrames,
     renderStateOne,
@@ -42,6 +45,7 @@ export default class RenderEngine {
 		treasureCanvas: HTMLCanvasElement | null,
 		treeCanvas: HTMLCanvasElement | null,
 		rockCanvas:HTMLCanvasElement | null,
+		spriteAnimationFrames: AllSprites
 	){	
 		/// uninitialized	
 		if(!board || !terrainCanvas || !treasureCanvas || !treeCanvas || !rockCanvas ) return;
@@ -64,7 +68,7 @@ export default class RenderEngine {
 						// the first item of 'state'in every tile is a ref to a background to render
 						/// 'Forest0' || 'Ground0' || 'Field0' <-- references data created by loadTerrainSprites()
 						const terrainSpriteName = value as TerrainSpriteName;
-						const sprite = RenderEngine.getSprite(value.slice(0, -1) as TerrainNames, terrainSpriteName);
+						const sprite = RenderEngine.getSprite(spriteAnimationFrames, value.slice(0, -1) as TerrainNames, terrainSpriteName);
 						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY }) 
 							/// ^ this will become generic draw
 					}
@@ -80,7 +84,7 @@ export default class RenderEngine {
 						case treasureThree:
 							
 							/// *** Draw Treasure  *** ///
-							sprite = RenderEngine.getSprite(value);
+							sprite = RenderEngine.getSprite(spriteAnimationFrames, value);
 							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
 							break;
 
@@ -90,14 +94,14 @@ export default class RenderEngine {
 
         					/// *** Draw Rocks Only once on map generation  *** ///
       						if(gameFrame !== 1) break; 
-							sprite = RenderEngine.getSprite(value);
+							sprite = RenderEngine.getSprite(spriteAnimationFrames, value);
 							RenderEngine.drawSprite(rockCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
 							break;
 
 						case treeOne:
 						case treeTwo:
 
-							sprite = RenderEngine.getSprite(value); /// [ Ex. TreeOne: { spriteName, src, frames:[]  } ]
+							sprite = RenderEngine.getSprite(spriteAnimationFrames, value); /// [ Ex. TreeOne: { spriteName, src, frames:[]  } ]
 							RenderEngine.drawSprite(treeCanvas, tileDimensions, renderState, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY });
 							break;
 
@@ -127,42 +131,35 @@ export default class RenderEngine {
 
 		const context = canvas?.getContext('2d');
 		if(!context) return; /// if the canvas leaves the dom, it should be undefined, 
-		/// causing this to end running proccesses dependent on canvas elements like the enemy movement loop
-
-		const tileImage = new Image();
-		tileImage.src = sprite.src;
-		tileImage.onload = (() => {
-
-			/// get square of sprite sheet to be drawn
-			const frameCoords = sprite.frames[renderState];
-			if(!frameCoords) return;
-
-			if(prevCanvasLocation){
-				/// for enemies and players			
-				context.clearRect(
-					prevCanvasLocation?.canvasX, 
-					prevCanvasLocation?.canvasY, 
-					tileDimensions.width, /// width
-					tileDimensions.height /// height
-				);
-			} else {
-				context.clearRect(
-					currentCanvasLocation.canvasX, 
-					currentCanvasLocation.canvasY, 
-					tileDimensions.width, /// width
-					tileDimensions.height /// height
-				);
-			}
-			
-			// console.log('`` ~~ draw object ~~ ``');	
-			context.drawImage(tileImage,
-				frameCoords.x, frameCoords.y, /// section of sprite sheet
-				gameSquare, gameSquare, /// [ sprite sheets are 32x32 ]
-				currentCanvasLocation.canvasX, currentCanvasLocation.canvasY, // location on canvas
+		
+		if(prevCanvasLocation){
+			/// for enemies and players			
+			context.clearRect(
+				prevCanvasLocation?.canvasX, 
+				prevCanvasLocation?.canvasY, 
 				tileDimensions.width, /// width
 				tileDimensions.height /// height
 			);
-		});
+		} else {
+			context.clearRect(
+				currentCanvasLocation.canvasX, 
+				currentCanvasLocation.canvasY, 
+				tileDimensions.width, /// width
+				tileDimensions.height /// height
+			);
+		}
+		
+		// console.log('`` ~~ draw object ~~ ``');	
+		/// get square of sprite sheet to be drawn
+		const frameCoords = sprite.frames[renderState];
+		if(!frameCoords) return;
+		context.drawImage(sprite.img,
+			frameCoords.x, frameCoords.y, /// section of sprite sheet
+			gameSquare, gameSquare, /// [ sprite sheets are 32x32 ]
+			currentCanvasLocation.canvasX, currentCanvasLocation.canvasY, // location on canvas
+			tileDimensions.width, /// width
+			tileDimensions.height /// height
+		);	
 	}
 
 
@@ -202,8 +199,9 @@ export default class RenderEngine {
 	 * 	src/assets/Forest.png [Forest0, Forest1, Forest2, ...]
 	 */
 	static getSprite(
+		spriteAnimationFrames: AllSprites,
 		spriteName: TerrainNames|ObjectSpriteNames, //// 'Forest' | 'Ground' | 'Field'
-		terrainName?: TerrainSpriteName /// 'Forest0' | 'RockOne' <-- to filter out sprite from SpriteData[]
+		terrainName?: TerrainSpriteName, /// 'Forest0' | 'RockOne' <-- to filter out sprite from SpriteData[]
 	){
 		//// this is trying to use spriteName to index
 		/// an object, but the object returned is undefined

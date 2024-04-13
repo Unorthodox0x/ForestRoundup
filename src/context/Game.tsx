@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useRef, createContext, type ReactElement, type ReactNode, useState } from 'react';
-import type { GameStates, IGameContext } from "@/types";
+import type { AllSprites, GameStates, IGameContext } from "@/types";
 import type Board from '@/lib/map/Board';
 import type Character from '@/lib/chars/Character';
 import { gameOver, running, startGame } from '@/constants/game';
 import { gameOverCanvas, gameStartCanvas, snailStaggerFrames } from '@/constants/canvas';
 import EventHandler from '@/lib/events/EventHandler';
-import { spriteAnimationFrames } from '@/constants/sprites';
 import useCanvasSize from '@/lib/render/useCanvasSize';
 import RenderEngine from '@/lib/render/RenderEngine';
+import Sprites from "@/lib/render/Sprites";
 
 export const GameContext = createContext<IGameContext>({} as IGameContext);
 export const GameProvider = ({ children }: { children: ReactNode }): ReactElement | null => {
   
   const { canvasHeight, canvasWidth, tileHeight, tileWidth } = useCanvasSize();
-  
+  const sprites = useRef<AllSprites>(new Sprites().spriteAnimationFrames);
   const [score, setScore] = useState(0);
   const initialFrame = 0;
 
@@ -113,6 +113,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
         treasureCanvas.current,
         rockCanvas.current,
         treeCanvas.current,
+        sprites.current,
       )
 
       if(gameState.current === running && gameFrame.current % snailStaggerFrames === 0){
@@ -122,25 +123,21 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
       /// {/* RENDER [== START GAME ==] SCREEN */}
       if(gameState.current === startGame){ 
         /// TODO: Render Screen animation
-        const context = gameStartScreen.current?.getContext('2d')
-        const image = new Image();
-        image.src = spriteAnimationFrames[gameStartCanvas][0]!.src; 
-        image.onload = (() => {
-          context?.drawImage(image, 0, 0, canvasWidth, canvasHeight);
-        })
+        const context = gameStartScreen.current?.getContext('2d') 
+          context?.drawImage(sprites?.current[gameStartCanvas][0]!.img, 
+            0, 0, canvasWidth, canvasHeight
+          );
       }
 
       /// {/* RENDER [== GAME OVER ==] SCREEN */}
       if(gameOverScreen.current && gameState.current === gameOver){
         
         const context = gameOverScreen.current.getContext('2d')
-        const image = new Image();
-        image.src = spriteAnimationFrames[gameOverCanvas][0]!.src; 
+ 
         const halfWidth = gameOverScreen.current.width/2
         const halfHeight = gameOverScreen.current.height/2
-        image.onload = (() => {
-          context?.drawImage(image, halfWidth/2, halfHeight/2, halfWidth, halfHeight)
-        })
+        context?.drawImage(sprites?.current[gameOverCanvas][0]!.img, 
+          halfWidth/2, halfHeight/2, halfWidth, halfHeight)
       }
       
       /// call self to proceed to next stage of loop
@@ -163,7 +160,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
 
         playerRef,
         setPlayerRef,
-
+        sprites,
         resetGameFrames, 
 
         score,

@@ -1,7 +1,7 @@
 import type { RefObject } from "react"
 import type Character from "@/lib/chars/Character";
 import type Board from '@/lib/map/Board';
-import type { GameStates, SetStateType, Address } from "@/types";
+import type { GameStates, SetStateType, Address, AllSprites } from "@/types";
 import type EventHandler from "@/lib/events/EventHandler";
 
 export type ISessionContext = {
@@ -18,6 +18,7 @@ export type IGameContext = {
 
     score: number,
     setScore: SetStateType<number>,
+   	sprites: RefObject<AllSprites>;
 
     resetGameFrames: () => void,
 	// gameState: GameStates,

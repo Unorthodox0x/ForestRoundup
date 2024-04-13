@@ -8,7 +8,6 @@ import { gameOver, mount, paused, startGame } from '@/constants/game';
 import { SessionContext } from "@/context";
 import useCanvasSize from '@/lib/render/useCanvasSize';
 
-
 export const ControllerContext = createContext<IControllerContext>({} as IControllerContext);
 export const ControllerProvider = ({ children }: { children: ReactNode }): ReactElement | null => {
 
@@ -19,6 +18,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 		gameState,
 		setGameState,
 		gameFrame,
+		sprites,
 		resetGameFrames,
 		boardRef,
 		playerRef,
@@ -46,7 +46,6 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	 */
 	function loadCanvas(){
 		setTimeout(()=>{
-
 			if(!playerCanvas?.current || !enemyCanvas?.current || 
 				!treasureCanvas?.current || !terrainCanvas?.current ||
 				!treeCanvas?.current || !rockCanvas?.current
@@ -57,6 +56,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 				playerCanvas.current, ///1st player context is unique because of being located in this function scope...?
 				enemyCanvas.current, /// this is global enemy context, shared by all enemies
 				treasureCanvas.current,
+				sprites.current
 			);
 
 		}, 50)

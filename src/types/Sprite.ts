@@ -1,8 +1,9 @@
 import type { battleAnimation, rockSquares, treasureSquares, treeSquares } from "@/constants/board";
 import type { gameOverCanvas, gameStartCanvas } from "@/constants/canvas";
 import type { enemyDirection, playerDirection } from "@/constants/zod/input";
-import type { terrainTypes } from "@/constants/sprites";
+import type { terrainTypes } from "@/constants/board";
 import type { Coordinates } from "./Board";
+import type { Prettify } from "@/types";
 
 export type EnemyDirection = typeof enemyDirection[number];
 export type PlayerDirection = typeof playerDirection[number];
@@ -49,10 +50,11 @@ export type TerrainSpriteSource = {
 
 /// Forest1, Rock1, Ground9 
 export type SpriteData = TerrainSpriteData|ObjectSpriteData;
-export type TerrainSpriteData = Omit<ObjectSpriteData, 'spriteName'> & {
+export type TerrainSpriteData = Prettify<Omit<ObjectSpriteData, 'spriteName'> & {
 	spriteName: TerrainSpriteName,
-}
+}>
 
+export type AllSprites = TerrainSprites & ObjectSprites;
 export type TerrainSprites = {
   [key in TerrainNames]: TerrainSpriteData[];
 };
@@ -65,6 +67,6 @@ export type Sprites<TSprite extends SpriteNames> =
 	: never;
 export type ObjectSpriteData = { 
 	spriteName: ObjectSpriteNames, 	
-	src: string, 
+	img: HTMLImageElement, 
 	frames: Coordinates[] 
 }

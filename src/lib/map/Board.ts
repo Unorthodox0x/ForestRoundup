@@ -14,7 +14,7 @@ import {
 import { enemyDirection, playerDown } from "@/constants/zod/input";
 import Chunk from "@/lib/map/Chunk";
 import Character from "@/lib/chars/Character";
-import type { BoardLocation, EnemyDirection, TileDimensions, TileState } from "@/types";
+import type { AllSprites, BoardLocation, EnemyDirection, TileDimensions, TileState } from "@/types";
 import type EventHandler from "../events/EventHandler";
 import { enemyCount, enemyType } from "@/constants/game";
 
@@ -32,6 +32,8 @@ export default class Board {
 	canvasHeight: number;
 	tileDimensions: TileDimensions
 	
+	spriteAnimationFrames:AllSprites;
+
 	enemies: Character[];
 	chunks: Chunk[]; /// useContext will access and manipulate this value
 	treasure: BoardLocation;
@@ -42,6 +44,7 @@ export default class Board {
 		treasureCanvas: HTMLCanvasElement,
 		canvasWidth: number,
 		canvasHeight: number,
+		spriteAnimationFrames: AllSprites,
 		tileDimensions: TileDimensions,
 	){
 		this.eventHandler = eventHandler; // moves enemies
@@ -51,6 +54,8 @@ export default class Board {
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 		this.tileDimensions = tileDimensions;
+
+		this.spriteAnimationFrames = spriteAnimationFrames;
 
 		this.enemies = [];
 		this.chunks = [];
@@ -97,7 +102,7 @@ export default class Board {
 	/// generate dynamic map
 	generateChunks () {
 		this.chunks = Array.from({ length: boardLength }, (_, index) => {
-			return new Chunk(index, this.tileDimensions);
+			return new Chunk(index, this.spriteAnimationFrames, this.tileDimensions);
 		});
 	}
 
@@ -120,7 +125,8 @@ export default class Board {
 				this.enemyCanvas, 
 				this.canvasWidth, 
 				this.canvasHeight,
-				this.tileDimensions
+				this.spriteAnimationFrames,
+				this.tileDimensions,
 			);
 		});
 	}
