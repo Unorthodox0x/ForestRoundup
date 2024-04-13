@@ -6,7 +6,7 @@ export const gameSquare = 32 as const; /// 32px x 32px
 /// render game every x ticks
 export const terrainStaggerFrames = 200 as const;
 // export const playerStaggerFrames = 500 as const;
-export const snailStaggerFrames = 400 as const;
+export const snailStaggerFrames = 250 as const;
 /// all Sprites except rocks have 2 animation frames
 export const renderStateOne = 0 as const;
 export const renderStateTwo = 1 as const;

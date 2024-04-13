@@ -8,8 +8,6 @@ import type {
     TerrainSpriteData,
     TileDimensions,
     CanvasCoordinates,
-    TerrainSprites,
-    ObjectSprites,
     AllSprites
 } from "@/types";
 import { chunkHeight, chunkWidth, rockOne, rockThree, rockTwo, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "@/constants/board";
