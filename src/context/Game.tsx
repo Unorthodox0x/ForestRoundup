@@ -80,9 +80,6 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
       /// this prevents multiple instances of gameLoop
 
     const renderer = new RenderEngine();
-
-    let animationId:number;
-
     setEventHandlerRef(  
       new EventHandler(  
         setBoardRef, 
@@ -97,6 +94,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
     // calling return within this scope of loop breaks the game loop
     // instead the gameState is used to prevent triggering of updates
     // without exiting this loop
+    let animationId:number;
     const gameLoop = () => {
       
       /// on each render loop increment current game frame by 1 
