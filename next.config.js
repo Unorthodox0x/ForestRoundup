@@ -83,7 +83,7 @@ module.exports = getConfig({
       {
         source: '/(.*)',
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "https://www.checkout.etherjolt.com/" },
+          { key: "Access-Control-Allow-Origin", value: "https://checkout.etherjolt.com" },
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
           { 

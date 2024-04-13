@@ -46,6 +46,10 @@ export default class RenderEngine {
 		/// uninitialized	
 		if(!board || !terrainCanvas || !treasureCanvas || !treeCanvas || !rockCanvas ) return;
 
+		/// get render states here to reduce render load.
+		const renderState = RenderEngine.getRenderState(gameFrame, terrainStaggerFrames)
+		if(renderState !== renderStateOne && renderState !== renderStateTwo) return;  /// no update to terrain on this frame 
+
 		/// v make this a promise and resolve it all at once??? 
 		board.chunks.map((chunk) =>{
 			if(chunk.tiles.length < 1) return;
@@ -70,10 +74,6 @@ export default class RenderEngine {
 						// the first item of 'state'in every tile is a ref to a background to render
 						/// 'Forest0' || 'Ground0' || 'Field0' <-- references data created by loadTerrainSprites()
 						const terrainSpriteName = value as TerrainSpriteName;
-
-						const renderState = RenderEngine.getRenderState(gameFrame, terrainStaggerFrames)
-						if(renderState !== renderStateOne && renderState !== renderStateTwo) return;  /// no update to terrain on this frame 
-
 						const sprite = RenderEngine.getSprite(value.slice(0, -1) as TerrainNames, terrainSpriteName);
 						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY }) 
 							/// ^ this will become generic draw
@@ -108,10 +108,7 @@ export default class RenderEngine {
 						case treeOne:
 						case treeTwo:
 
-        					const renderState = RenderEngine.getRenderState(gameFrame, terrainStaggerFrames)
-							if(renderState !== renderStateOne && renderState !== renderStateTwo) return;  /// no update to terrain on this frame 
 							sprite = RenderEngine.getSprite(value); /// [ Ex. TreeOne: { spriteName, src, frames:[]  } ]
-
 							RenderEngine.drawSprite(treeCanvas, tileDimensions, renderState, sprite, { canvasX, canvasY });
 							break;
 
