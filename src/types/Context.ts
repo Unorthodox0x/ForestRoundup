@@ -42,5 +42,6 @@ export type IGameContext = {
 	playerRef: RefObject<Character|null>,
 	setPlayerRef: (ref:Character|null) => void,
 
-	eventHandler: RefObject<EventHandler>
+	eventHandler: EventHandler
+	// eventHandler: RefObject<EventHandler>
 }

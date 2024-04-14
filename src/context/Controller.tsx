@@ -13,7 +13,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 	/** Wherever the board is updated, must update boardRef.current */
 	const { walletAddress,isSubscribed } = useContext(SessionContext);
-  	const { canvasHeight, canvasWidth } = useCanvasSize();
+  	const { canvasHeight, canvasWidth, tileHeight, tileWidth, isMobile, calculateScreenDimensions } = useCanvasSize();
 	const { 
 		gameState,
 		setGameState,
@@ -33,6 +33,17 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 	} = useContext(GameContext);
 
 	/**
+	 * portion of screen to detect mobile touch event
+	 */
+  	const canvasSegments = 4; // for touch control configuration. 
+  	const canvasVerticleSection = canvasHeight / canvasSegments
+	const canvasHorizontalSection = canvasWidth / canvasSegments
+	const canvasTop = canvasVerticleSection;
+	const canvasBottom = canvasHeight - canvasVerticleSection;
+	const canvasLeft = canvasVerticleSection;
+	const canvasRight = canvasWidth - canvasHorizontalSection;
+
+	/**
 	 * 	[GameState] ==> GameStart, Running, Paused, null
 	 * 	
 	 * 	- When GameStart, gameFrame === 0
@@ -48,33 +59,48 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 		setTimeout(()=>{
 			if(!playerCanvas?.current || !enemyCanvas?.current || 
 				!treasureCanvas?.current || !terrainCanvas?.current ||
-				!treeCanvas?.current || !rockCanvas?.current
+				!treeCanvas?.current || !rockCanvas?.current || 
+				!sprites.current
 			) return;
 
-			console.log('loaded::: initialize game')
-			eventHandler.current?.handleStart(
+			console.log('loadCanvas:::canvasHeight',canvasHeight)
+			console.log('loadCanvas:::canvasWidth',canvasWidth)
+			console.log('loadCanvas:::tileHeight',tileHeight)
+			console.log('loadCanvas:::tileWidth',tileWidth)
+
+			eventHandler.handleStart(
 				playerCanvas.current, ///1st player context is unique because of being located in this function scope...?
 				enemyCanvas.current, /// this is global enemy context, shared by all enemies
 				treasureCanvas.current,
-				sprites.current
+				sprites.current,
+				canvasWidth,
+				canvasHeight,
+				{ height: tileHeight, width: tileWidth }
 			);
-
-		}, 50)
+		}, 100)
 	}
+	
+	/**
+	 * [== Mobile Device Orientation ==]
+	 * when orientation changes, the height && width of each tile may change, 
+	 * 	this will result in sprites being drawn to incorrect positions on canvas
+	 * 	
+	 * detect new dimensions and set them in board/enemy/player state
+	 */
+	function handleOrientationChange() {
+		if(!boardRef?.current || !playerRef.current) return;
+		calculateScreenDimensions(isMobile);
+ 		eventHandler.handleOrientationChange(
+ 			boardRef.current, 
+ 			playerRef.current, 
+ 			{ height: tileHeight, width: tileWidth }
+ 		);
+	};
+
 
 	/**
 	 * [ === Mobile controls === ]
 	 */
-		/**
-		 * portion of screen to detect mobile touch event
-		 */
-	  	const canvasSegments = 4; // for touch control configuration. 
-	  	const canvasVerticleSection = canvasHeight / canvasSegments
-		const canvasHorizontalSection = canvasWidth / canvasSegments
-		const canvasTop = canvasVerticleSection;
-		const canvasBottom = canvasHeight - canvasVerticleSection;
-		const canvasLeft = canvasVerticleSection;
-		const canvasRight = canvasWidth - canvasHorizontalSection;
 	function handleDeviceTouch(e:TouchEvent) {
 		const deviceX = e.changedTouches[0]?.pageX
 		const deviceY = e.changedTouches[0]?.pageY		
@@ -91,29 +117,27 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 		if (deviceX >= canvasRight) {
 		    // Tilted to the right
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas?.current);
+			eventHandler.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas?.current);
 		}
 
 		else if (deviceX <= canvasLeft) {
 		    // Tilted to the left
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas?.current);
+			eventHandler.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas?.current);
 		}
 
    		else if (deviceY <= canvasTop) { /// top section of screen was pressed
 		    // Tilted backward
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
+			eventHandler.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas?.current);
 		}
 
 		else if (deviceY >= canvasBottom) {
 		    // Tilted forward
 			if(gameState.current === paused) return;
-			eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
+			eventHandler.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas?.current);
 		}
-
     }
-
 
 	function handleKeyDown(e:KeyboardEvent){
 
@@ -133,7 +157,7 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
 		if(gameState && e.code === 'Space'){
 			// console.log('~~~ PAUSE EVENT ~~~', gameState);
-			eventHandler.current?.handlePause(gameState.current);
+			eventHandler.handlePause(gameState.current);
 		}
 
 		else if(
@@ -152,22 +176,22 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 				case "KeyW":
 				case "ArrowUp":
 					if(gameState.current === paused || !playerContext) return;
-					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);
+					eventHandler.handleMove(boardRef.current, playerRef.current, playerUp, playerCanvas.current);
 					break;
 				case "KeyS":
 				case "ArrowDown":
 					if(gameState.current === paused || !playerContext) return;
-					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
+					eventHandler.handleMove(boardRef.current, playerRef.current, playerDown, playerCanvas.current);
 					break;
 				case "KeyA":
 				case "ArrowLeft":
 					if(gameState.current === paused || !playerContext) return;
-					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
+					eventHandler.handleMove(boardRef.current, playerRef.current, playerLeft, playerCanvas.current);
 					break;
 				case "KeyD":
 				case "ArrowRight":
 					if(gameState.current === paused || !playerContext) return;
-					eventHandler.current?.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
+					eventHandler.handleMove(boardRef.current, playerRef.current, playerRight, playerCanvas.current);
 					break
 				default:
 					/// unhandled input
@@ -178,20 +202,17 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 
     /** initialize input detector */
 	useEffect(()=>{
-
-	    window.addEventListener('touchstart', handleDeviceTouch);
 		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('change', handleOrientationChange);
+	    window.addEventListener('touchstart', handleDeviceTouch);
 
 		/** Cleanup - to prevent multiple listener instances */
       	return () => {
-      		window.removeEventListener('touchstart', handleDeviceTouch);
 			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('change', handleOrientationChange)
+      		window.removeEventListener('touchstart', handleDeviceTouch);
       	}
 	})
 
-	return (
-		<ControllerContext.Provider value={{}}>
-		{children}
-		</ControllerContext.Provider>
-	);
+	return <ControllerContext.Provider value={{}}>{children}</ControllerContext.Provider>
 }

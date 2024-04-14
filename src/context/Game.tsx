@@ -62,57 +62,38 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
   }
 
   const resetGameFrames = () => { gameFrame.current = initialFrame; }  
-  const setBoardRef = (ref:Board|null) => { 
-    if(gameState.current === gameOver) return; /// this internal enemy movement loop??
-    boardRef.current = ref; 
-  };
+  const setBoardRef = (ref:Board|null) => { boardRef.current = ref; };
   const setPlayerRef = (ref:Character|null) => { playerRef.current = ref; };
 
-  const eventHandler = useRef<EventHandler|null>(null); 
-  const setEventHandlerRef = (ref: EventHandler)=>{ eventHandler.current = ref}
+  const eventHandler = new EventHandler(setBoardRef,setScore,setGameState,setPlayerRef)
 
   /**
    * Launch Render engine for Canvas
    */
   useEffect(() => {
-    if(!canvasHeight||!canvasWidth||!tileHeight||!tileWidth) return; 
-    // only trigger game loop once screen size detected
-      /// this prevents multiple instances of gameLoop
-
-    const renderer = new RenderEngine();
-    setEventHandlerRef(  
-      new EventHandler(  
-        setBoardRef, 
-        setScore,
-        setGameState,
-        setPlayerRef,
-        canvasWidth,
-        canvasHeight,
-        { height: tileHeight, width: tileWidth },
-      ))
-
     // calling return within this scope of loop breaks the game loop
     // instead the gameState is used to prevent triggering of updates
     // without exiting this loop
     let animationId:number;
+
+    if(!canvasHeight ||!canvasWidth||!tileHeight||!tileWidth)return;
     const gameLoop = () => {
-      
+
       /// on each render loop increment current game frame by 1 
-        /// to keep count of the total number of frames drawn
-      
+        /// to keep count of the total number of frames drawn      
       if(gameState.current === running){
         gameFrame.current++; 
       }
 
       /** [== Render Game Board ==] **/ 
-      renderer.renderBoard(
+      RenderEngine.renderBoard(
         boardRef.current,
         gameFrame.current,
         { height:tileHeight, width:tileWidth },
         terrainCanvas.current, /// possible that relic is left over after game ends, 
         treasureCanvas.current,
-        rockCanvas.current,
         treeCanvas.current,
+        rockCanvas.current,
         sprites.current,
       )
 
@@ -122,7 +103,8 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
 
       /// {/* RENDER [== START GAME ==] SCREEN */}
       if(gameState.current === startGame){ 
-        /// TODO: Render Screen animation
+        // console.log('canvasWidth.current', canvasWidth.current)
+        // console.log('canvasHeight.current', canvasHeight.current)
         const context = gameStartScreen.current?.getContext('2d') 
           context?.drawImage(sprites?.current[gameStartCanvas][0]!.img, 
             0, 0, canvasWidth, canvasHeight
@@ -130,12 +112,10 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
       }
 
       /// {/* RENDER [== GAME OVER ==] SCREEN */}
-      if(gameOverScreen.current && gameState.current === gameOver){
-        
+      if(gameOverScreen.current && gameState.current === gameOver){        
         const context = gameOverScreen.current.getContext('2d')
- 
-        const halfWidth = gameOverScreen.current.width/2
-        const halfHeight = gameOverScreen.current.height/2
+        const halfWidth = gameOverScreen.current.width/2;
+        const halfHeight = gameOverScreen.current.height/2;
         context?.drawImage(sprites?.current[gameOverCanvas][0]!.img, 
           halfWidth/2, halfHeight/2, halfWidth, halfHeight)
       }
@@ -148,7 +128,7 @@ export const GameProvider = ({ children }: { children: ReactNode }): ReactElemen
     gameLoop()
     
     return () => window.cancelAnimationFrame(animationId)
-  },[canvasHeight, canvasWidth,  tileHeight, tileWidth])
+  })
 
   return (
     <GameContext.Provider 

@@ -17,6 +17,8 @@ import Character from "@/lib/chars/Character";
 import type { AllSprites, BoardLocation, EnemyDirection, TileDimensions, TileState } from "@/types";
 import type EventHandler from "../events/EventHandler";
 import { enemyCount, enemyType } from "@/constants/game";
+import RenderEngine from "../render/RenderEngine";
+import { renderStateOne } from "@/constants/canvas";
 
 /** 
  * This class is stored in a useRef hook 
@@ -27,7 +29,6 @@ export default class Board {
 	eventHandler: EventHandler;
 	enemyCanvas: HTMLCanvasElement;
 	treasureCanvas: HTMLCanvasElement;
-	
 	canvasWidth: number;
 	canvasHeight: number;
 	tileDimensions: TileDimensions
@@ -50,16 +51,14 @@ export default class Board {
 		this.eventHandler = eventHandler; // moves enemies
 		this.enemyCanvas = enemyCanvas;
 		this.treasureCanvas = treasureCanvas;
-
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 		this.tileDimensions = tileDimensions;
-
 		this.spriteAnimationFrames = spriteAnimationFrames;
 
 		this.enemies = [];
 		this.chunks = [];
-		this.treasure = { chunk: 0, tile:0 } /// initialze default, will be upated when board fully generated
+		this.treasure = { chunk: 0, tile:0 } /// initialze default, will be upated when board fully generated		
 	}
 
 	initialize(){
@@ -114,6 +113,30 @@ export default class Board {
 		return this.chunks[chunkIndex]!;
 	}
 
+	/**
+	 * Tiles have canvas Coords set on board generation
+	 * 	for mobile devices, when screen orientation changes, these values
+	 * 	must be updated to match new screen dimensions
+	 * 
+	 * this approach is used to set exact dimensions on each tile becasuse
+	 * 	it is less work to have values set on tiles than to calculate
+	 * 	 repeatedly in render loop
+	 */
+	resetTileCoordinates(tileDimensions: TileDimensions){
+		this.tileDimensions = tileDimensions;
+
+		this.enemies.map((enemy)=>{
+			enemy.setTileDimensions(tileDimensions)
+		});
+
+		this.chunks.map((chunk, cIndex)=>{
+			chunk.tiles.map((tile, tIndex)=>{
+				tile.setCanvasCoords(tileDimensions);
+				this.chunks[cIndex]!.tiles[tIndex] = tile;
+			})
+		})
+	}
+
 	spawnEnemies(){
 		this.enemies = Array.from({length: enemyCount}, (_, index) => { 
 			const { direction, location } =  this.rollEnemyChunk(index);
@@ -123,8 +146,6 @@ export default class Board {
 				direction, 
 				location, 
 				this.enemyCanvas, 
-				this.canvasWidth, 
-				this.canvasHeight,
 				this.spriteAnimationFrames,
 				this.tileDimensions,
 			);
@@ -142,8 +163,7 @@ export default class Board {
 		});
 	}
 
-
-	 rollEnemyChunk(id: number):{ 
+	rollEnemyChunk(id: number):{ 
 		direction: EnemyDirection, 
 		location: { chunk: number, tile: number } 
 	}{
@@ -171,13 +191,10 @@ export default class Board {
 	setObstacles(){
 		this.chunks.flatMap((chunk, chunkIndex)=>{
 			return chunk.tiles.map((tile, tileIndex)=> {
-
-				/// don't put obstacle in a non-empty square
-				if(tile.state.length > 1) return;
+				if(tile.state.length > 1) return; /// don't put obstacle in a non-empty square
 				
-				const obstacleRoll = Math.random();
-
 				// roll modify chance
+				const obstacleRoll = Math.random();
 				if(obstacleRoll < 0.85) return tile;
 
 				const obstacle = obstacleSquares[Math.floor(Math.random()**2*5)]!
@@ -192,30 +209,34 @@ export default class Board {
 		const chunkIndex = Math.floor(Math.random() * boardLength);
 		const tileIndex = Math.floor(Math.random() * chunkLength);
 		const tile = this.getChunk(chunkIndex)?.getTile(tileIndex);
+		const currentTile = this.getChunk(this.treasure.chunk).getTile(this.treasure.tile);
 
 		/// don't set treasure if state contains more than terrain
-		if(!tile || tile.state.length > 1){ /// invalid chunk, reroll
-			///random coords are invalid, 
+		if(!tile || !currentTile || tile.state.length > 1){ /// invalid chunk, reroll
+			/// random coords are invalid, 
 			/// recursively retry until valid found
 			this.setTreasure();
 		} 
 
-		else { /// valid chunk, update tile state array
-
-			this.treasure = {
-				chunk: chunkIndex,
-				tile: tileIndex
-			}
+		else { /// valid chunk, spawn new treasure on board
 
 			/// select sprite animation
 			const treasure = treasureSquares[Math.floor(Math.random()*3)]!;
+			const sprite = RenderEngine.getSprite(this.spriteAnimationFrames, treasure);
+			
+			/// *** Draw Treasure  *** ///
+			RenderEngine.drawSprite(
+				this.treasureCanvas, 
+				this.tileDimensions, 
+				renderStateOne, 
+				sprite, 
+				{ canvasX: tile.canvasX, canvasY:tile.canvasY }, /// new location to place
+				{ canvasX: currentTile.canvasX, canvasY:currentTile.canvasY }, /// prev to clear
+			)
 
-			/// clear prev treasure from board
-			const context = this.treasureCanvas?.getContext('2d');
-			if(!context) return;
-			context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
-
-			tile.state.push(treasure); /// update tile state
+			/// set new treasure in board state
+			tile.state.push(treasure); /// add treasure to tile state
+			this.treasure = { chunk: chunkIndex, tile: tileIndex }
 			this.chunks[chunkIndex]!.tiles[tileIndex] = tile; /// update tile in class memory
 		}
 	}

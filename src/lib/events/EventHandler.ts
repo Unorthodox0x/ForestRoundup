@@ -14,29 +14,17 @@ export default class EventHandler {
 	setScore: IGameContext['setScore'];
 	setBoardRef: IGameContext['setBoardRef']
 	setPlayerRef:IGameContext['setPlayerRef']
-
-	canvasHeight: number;
-	canvasWidth: number;
-	tileDimensions: TileDimensions
-
 	
 	constructor(
 		setBoardRef: IGameContext['setBoardRef'],
 		setScore: IGameContext['setScore'],
 		setGameState: IGameContext['setGameState'],
 		setPlayerRef: IGameContext['setPlayerRef'],
-		canvasWidth: number,
-		canvasHeight: number,
-		tileDimensions: TileDimensions,
 	){
 		this.setGameState = setGameState;
 		this.setScore = setScore;
 		this.setBoardRef = setBoardRef;
 		this.setPlayerRef = setPlayerRef;
-
-		this.canvasHeight = canvasHeight;
-		this.canvasWidth = canvasWidth;
-		this.tileDimensions = tileDimensions;
 	}
 
 	handleStart(
@@ -44,6 +32,9 @@ export default class EventHandler {
 		enemyCanvas: HTMLCanvasElement, /// ref from global state passed down, only a single instance of canvas is used for all enemies
 		treasureCanvas:HTMLCanvasElement,
 		spriteAnimationFrames: AllSprites,
+		canvasWidth: number,
+		canvasHeight: number,
+		tileDimensions: TileDimensions
 	){
 		try {
 			/// generate board && player
@@ -51,10 +42,10 @@ export default class EventHandler {
 				this, 
 				enemyCanvas, 
 				treasureCanvas, 
-				this.canvasWidth, 
-				this.canvasHeight,
+				canvasWidth, 
+				canvasHeight,
 				spriteAnimationFrames,
-				this.tileDimensions,
+				tileDimensions,
 			);
 			
 			board.initialize(); /// initialize board with global enemy context
@@ -68,10 +59,8 @@ export default class EventHandler {
 					playerDown,
 					{ chunk: originChunk, tile: originSquare },
 					playerCanvas,
-					this.canvasWidth,
-					this.canvasHeight,
 					spriteAnimationFrames,
-					this.tileDimensions
+					tileDimensions /// used to draw initial char sprite 
 				)
 			);
 
@@ -83,14 +72,23 @@ export default class EventHandler {
 		}
 	}
 
+	handleOrientationChange(
+		board: Board,
+		player: Character,
+		tileDimensions: TileDimensions
+	){
+		board.resetTileCoordinates(tileDimensions);
+		player.setTileDimensions(tileDimensions);
+		this.setBoardRef(board);
+		this.setPlayerRef(player);
+	}
+
 	handlePause(gameState:GameStates){
 		switch(gameState){
 			case paused:
-				console.log( '~~~```Run Game```~~~')
 				this.setGameState(running); /// cause game if spacebar pressed
 				break;
 			case running:
-				console.log( '~~~```Pause Game```~~~')
 				this.setGameState(paused); /// cause game if spacebar pressed
 				break;
 			default:

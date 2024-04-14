@@ -27,22 +27,32 @@ export default class Tile {
 		this.chunk = parent;
 		this.coords = Tile.indexToCoords(tileIndex);
 
-		this.canvasX = RenderEngine.getCanvasX(
-			{chunk: this.chunk.x, tile: this.coords.x},
-			tileDimensions,
-		)
-		this.canvasY = RenderEngine.getCanvasY(
-			{chunk: this.chunk.y, tile: this.coords.y},
-			tileDimensions,
-		)
 		/// pick a random terrain from terrainTypes 
 		/// &&
 		/// a random number 1-10, higher likelyhood of lower numbers
 		/// where there are 10 tiles for each terrain type
 		const terrainSpriteIndex = Math.floor((Math.random() ** 2) * 10);
 		const spriteName = spriteAnimationFrames[terrain][terrainSpriteIndex]!.spriteName;
-
 		this.state = [spriteName];
+		
+		this.canvasX = 0;
+		this.canvasY = 0;
+		this.setCanvasCoords(tileDimensions);
+	}
+
+	/**
+	 * Called once upon initial board load
+	 * 	Called again upon device orientation change
+	 */
+	setCanvasCoords(tileDimensions: TileDimensions){
+		this.canvasX = RenderEngine.getCanvasX(
+			{ chunk: this.chunk.x, tile: this.coords.x },
+			tileDimensions,
+		)
+		this.canvasY = RenderEngine.getCanvasY(
+			{ chunk: this.chunk.y, tile: this.coords.y },
+			tileDimensions,
+		)
 	}
 	
 	clearState(){ this.state = []; }

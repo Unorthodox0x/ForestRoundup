@@ -10,7 +10,6 @@ import { StartButton, OptionButton, AccountSettings } from '@/components';
 export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
 
   const { canvasHeight, canvasWidth, isMobile } = useCanvasSize();
-
 	const { gameStartScreen } =  useContext(GameContext);
   const { networkSupported, walletAddress, isSubscribed } = useContext(SessionContext);
 
@@ -25,7 +24,7 @@ export default function GameStartScreen({ children }:{ children: ReactNode[]}) {
     }> 
       
       <div className='flex flex-col justify-between items-center text-white'>
-        <h1 className='text-6xl mt-8 font-Milonga font-bold'>
+        <h1 className='text-6xl text-center mt-8 font-Milonga font-bold'>
           Forest Roundup
         </h1>
 

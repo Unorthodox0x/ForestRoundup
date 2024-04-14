@@ -21,7 +21,7 @@ export default function PauseButton(){
 	 * currently on mobile, the method for rendering the board is sluggish
 	 */
 	function handlePress(){
-		eventHandler.current?.handlePause(gameState.current);
+		eventHandler.handlePause(gameState.current);
 	}
 
 	return(

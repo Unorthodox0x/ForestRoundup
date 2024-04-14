@@ -14,4 +14,4 @@ export const enemyType = "enemy" as const;
 export const playerType = "player" as const;
 
 export const initialFrame = 0;
-export const enemyCount = 20; /// this at 0 'turns off' enemies, causing them not to spawn
+export const enemyCount = 0; /// this at 0 'turns off' enemies, causing them not to spawn

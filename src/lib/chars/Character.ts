@@ -9,6 +9,7 @@ import {
 import RenderEngine from "@/lib/render/RenderEngine";
 import Chunk from "@/lib/map/Chunk";
 import Tile from "@/lib/map/Tile";
+import { playerType } from "@/constants/game";
 
 export default class Character {
 
@@ -24,8 +25,6 @@ export default class Character {
 	canvasX: number;
 	canvasY: number;
 	/// total width of global canvas, ref passed down from global state
-	canvasWidth: number;
-	canvasHeight: number;
 	tileDimensions: TileDimensions
 
 	/// create enemies when initializing board
@@ -35,8 +34,6 @@ export default class Character {
 		direction: EnemyDirection|PlayerDirection,
 		location: BoardLocation,
 		canvas: HTMLCanvasElement,
-		canvasWidth: number,
-		canvasHeight: number,
 		spriteAnimationFrames: AllSprites,
 		tileDimensions: TileDimensions,
 	){
@@ -44,18 +41,14 @@ export default class Character {
 		this.charType = charType;
 		this.location = location;
 		this.direction = direction;
-
-		this.canvasWidth = canvasWidth;
-		this.canvasHeight = canvasHeight;
 		this.tileDimensions = tileDimensions;
-
 		this.spriteAnimationFrames = spriteAnimationFrames;
 		
 		// console.log('enemy - enemyDirection', enemyDirection)
-		const chunk = Chunk.indexToCoords(location.chunk)
+		const chunk = Chunk.indexToCoords(location.chunk);
 		const tile = Tile.indexToCoords(location.tile);
-		this.canvasX = RenderEngine.getCanvasX({chunk: chunk.x, tile: tile.x}, tileDimensions);
-		this.canvasY = RenderEngine.getCanvasY({chunk: chunk.y, tile: tile.y}, tileDimensions);
+		this.canvasX = RenderEngine.getCanvasX({ chunk: chunk.x, tile: tile.x }, tileDimensions);
+		this.canvasY = RenderEngine.getCanvasY({ chunk: chunk.y, tile: tile.y }, tileDimensions);
 
 		/// [== spawn ==] draw character
 		RenderEngine.drawSprite(
@@ -65,6 +58,10 @@ export default class Character {
 			RenderEngine.getSprite(this.spriteAnimationFrames, this.direction),
 			{ canvasX: this.canvasX, canvasY: this.canvasY }
 		);
+	}
+
+	setTileDimensions(tileDimensions: TileDimensions){
+		this.tileDimensions = tileDimensions;
 	}
 
 	/// this is only called once movement has been validated

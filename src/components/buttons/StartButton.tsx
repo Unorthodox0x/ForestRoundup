@@ -7,7 +7,7 @@ import { mount } from "@/constants/game";
 
 export default function StartButton(){
 
-  	const { isMobile } = useCanvasSize();
+  	const { isMobile, canvasHeight, canvasWidth, tileHeight, tileWidth } = useCanvasSize();
 	const {
 		eventHandler,
 		sprites,
@@ -30,14 +30,18 @@ export default function StartButton(){
 		setTimeout(()=>{
 			if(!playerCanvas?.current ||
 				!enemyCanvas?.current ||
-				!treasureCanvas?.current
+				!treasureCanvas?.current ||
+				!sprites?.current
 			) return;
 			
-			eventHandler.current?.handleStart(
+			eventHandler.handleStart(
 				playerCanvas?.current,
 				enemyCanvas?.current,
 				treasureCanvas?.current,
-				sprites.current
+				sprites.current,
+				canvasWidth,
+				canvasHeight,
+				{ height: tileHeight, width: tileWidth }
 			);
 		}, 50);
 	}

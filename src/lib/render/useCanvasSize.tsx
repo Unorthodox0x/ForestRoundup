@@ -12,78 +12,60 @@ import { gameSquare } from '@/constants/canvas';
  *  to inform game of which canvas && which controls to load/use, (mobile or desktop)
  */
 function useCanvasSize() {
- 
+  
+  const isMobile = detectMobileDevice();
   const [canvasHeight, setCanvasHeight] = useState<number>(0);
   const [canvasWidth, setCanvasWidth] = useState<number>(0);
-
-  
   const [tileHeight, setTileHeight] = useState<number>(0);
   const [tileWidth, setTileWidth] = useState<number>(0);
-  
-  const isMobile = canvasHeight !== desktopCanvasHeight && canvasWidth !== desktopCanvasWidth
 
-  useEffect(() => {
+  function detectMobileDevice() {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /webos|iphone|ipad|ipod|blackberry|windows phone|android|windows|kindle|samsung|surface|nexus|pixel/.test(userAgent);
+  }
 
-    function detectMobileDevice() {
-      const userAgent = window.navigator.userAgent.toLowerCase();
+  /**
+   * THERE IS AN ISSUE WITH RENDING THE GAME SCREEN
+   *  ON LOAD, THIS INITIAL VALUES OF CANVASHEIGHT&&WIDTH ARE 0, 
+   *  THIS IS NEVER RESET IN CANVAS COMPONENTS DESPITE THE REF
+   */
 
-      const isMobile =/webos|iphone|ipad|ipod|blackberry|windows phone|android|windows|kindle|samsung|surface|nexus|pixel/.test(userAgent);
+  // Calculate the width and height of each tile
+  function calculateScreenDimensions(isMobile:boolean){
+    if(isMobile){
+      setCanvasHeight(window.innerHeight);
+      setCanvasWidth(window.innerWidth);
+      /// Math.floor removes horizontal && verticle gaps between tiles
+      // setTileWidth(
+      //   Number((window.innerWidth / horizontalTiles).toPrecision(4))
+      // );
+      // setTileHeight(
+      //   Number((window.innerHeight / verticleTiles).toPrecision(4))
+      //   );
 
-      let canvasHeight:number;
-      let canvasWidth: number;
+      setTileWidth(Math.floor(window.innerWidth / horizontalTiles+.3));
+      setTileHeight(Math.floor(window.innerHeight / verticleTiles+.3));
 
-      let tileWidth:number;
-      let tileHeight: number;
-
-      if(isMobile){
-
-        canvasHeight = window.innerHeight;
-        canvasWidth = window.innerWidth;
-
-        /// testing... 
-          /// tileWidth = canvasWidth / (boardWidth * chunkWidth);
-          /// ^ this causes very fine horizontal gaps between 
-
-        // Calculate the width and height of each tile
-        tileHeight = canvasHeight / verticleTiles;
-        tileWidth = Math.floor(canvasWidth / horizontalTiles);
-
-        // tileHeight = canvasHeight / (boardHeight * chunkHeight);
-        // tileWidth = Math.floor(canvasWidth / (boardWidth * chunkWidth));
-        // tileWidth = canvasWidth / (boardWidth * chunkWidth)/2;
-
-      } else {
-
-        canvasHeight = desktopCanvasHeight;
-        canvasWidth = desktopCanvasWidth;
-
- 
-
-        // Calculate the width and height of each tile
-        tileWidth = gameSquare;
-        tileHeight = gameSquare;
-      }
-          
-      setCanvasHeight(canvasHeight)
-      setCanvasWidth(canvasWidth)
-      
-      // setThirdCanvasHeight(canvasHeight/3);
-      // setThirdCanvasWidth(canvasWidth/3);
-      setTileHeight(tileHeight)
-      setTileWidth(tileWidth)
+      // tileHeight.current = Math.floor(canvasHeight.current / verticleTiles);
+    } else {
+      setCanvasHeight(desktopCanvasHeight);
+      setCanvasWidth(desktopCanvasWidth);
+      setTileWidth(gameSquare);
+      setTileHeight(gameSquare);
     }
+  }
+  
+  useEffect(()=>{
+    calculateScreenDimensions(isMobile); /// calculate once on app mount
+  })
 
-    detectMobileDevice();
-  });
-
-
-
-  return { 
+  return {
+    isMobile,
+    calculateScreenDimensions,
     tileHeight, 
     tileWidth,
     canvasHeight, 
     canvasWidth,
-    isMobile,
   }
 }
 

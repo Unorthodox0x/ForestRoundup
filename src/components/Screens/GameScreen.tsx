@@ -17,7 +17,7 @@ export default function GameScreen() {
     treeCanvas,
     gameState
 	} = useContext(GameContext);
-
+    
 	return(
 		<div className={
       isMobile 

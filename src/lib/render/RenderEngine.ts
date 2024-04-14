@@ -10,7 +10,7 @@ import type {
     CanvasCoordinates,
     AllSprites
 } from "@/types";
-import { chunkHeight, chunkWidth, rockOne, rockThree, rockTwo, treasureOne, treasureThree, treasureTwo, treeOne, treeTwo } from "@/constants/board";
+import { chunkHeight, chunkWidth, rockOne, rockThree, rockTwo, treeOne, treeTwo } from "@/constants/board";
 import { gameSquare } from "@/constants/canvas";
 import { 
 	terrainStaggerFrames,
@@ -35,7 +35,7 @@ import type Board from "@/lib/map/Board";
  */
 export default class RenderEngine {
 
-	renderBoard(
+	static renderBoard(
 		board: Board|null,
 		gameFrame: number,
 		tileDimensions: TileDimensions,
@@ -46,7 +46,7 @@ export default class RenderEngine {
 		spriteAnimationFrames: AllSprites
 	){	
 		/// uninitialized	
-		if(!board || !terrainCanvas || !treasureCanvas || !treeCanvas || !rockCanvas ) return;
+		if(!board || !terrainCanvas || !treasureCanvas || !treeCanvas || !rockCanvas) return;
 
 		/// get render states here to reduce render load.
 		const renderState = RenderEngine.getRenderState(gameFrame, terrainStaggerFrames)
@@ -59,7 +59,6 @@ export default class RenderEngine {
 				if(tile.state.length < 1) return;
 				tile.state.map((value, index) => {
 					if(index === 0){ 
-
 						///
 						/// FORMAT KEY STORED IN TILE STATE TO KEY THAT REFERENCES SPRITE IN SPRITE_ANIMATIONS
 						///
@@ -70,21 +69,20 @@ export default class RenderEngine {
 						RenderEngine.drawSprite(terrainCanvas, tileDimensions, renderState, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY }) 
 							/// ^ this will become generic draw
 					}
-					
 
 					let sprite:SpriteData|undefined;
 					switch(value){
 
-						//// remove this from here, and only draw on board, 
-							/// spawn 1st on board creation
-						case treasureOne:
-						case treasureTwo:
-						case treasureThree:
+						// //// remove this from here, and only draw on board, 
+						// 	/// spawn 1st on board creation
+						// case treasureOne:
+						// case treasureTwo:
+						// case treasureThree:
 							
-							/// *** Draw Treasure  *** ///
-							sprite = RenderEngine.getSprite(spriteAnimationFrames, value);
-							RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
-							break;
+						// 	/// *** Draw Treasure  *** ///
+						// 	sprite = RenderEngine.getSprite(spriteAnimationFrames, value);
+						// 	RenderEngine.drawSprite(treasureCanvas, tileDimensions, renderStateOne, sprite, { canvasX: tile.canvasX, canvasY:tile.canvasY })
+						// 	break;
 
 						case rockOne:
 						case rockTwo:
@@ -125,10 +123,8 @@ export default class RenderEngine {
 		currentCanvasLocation: { canvasX:number, canvasY:number },
 		prevCanvasLocation?: { canvasX:number, canvasY:number }, /// only for players
 	){
-		if(!sprite) return;
-
 		const context = canvas?.getContext('2d');
-		if(!context) return; /// if the canvas leaves the dom, it should be undefined, 
+		if(!context||!sprite) return; /// if the canvas leaves the dom, it should be undefined, 
 		
 		if(prevCanvasLocation){
 			/// for enemies and players			
@@ -160,23 +156,6 @@ export default class RenderEngine {
 		);	
 	}
 
-
-	/**
-	 * THESE METHODS ARE PROBLEMATIC, 
-	 * 	BECAUSE THEY ONLY TAKE IN THE CHUNK/TILE COORDS, 	
-	 * 	CHARACTERS CAN NEVER EXIST BETWEEN SQUARES...
-	 * 
-	 * FOR CHARACTERS, CANVASX && CANVASY SHOULD ONLY BE SET ONCE...?
-	 * 	THEN MODIFY AS NEEDED...??
-	 * 	
-	 * BY HOW MUCH DISTANCE SHOULD A MOVEMENT IN 
-	 * 	SOME DIRECTION MODIFY CANVASX && CANVASY OF CHAR
-	 * 
-	 * 
-	 * THIS METHOD HERE NEEDS TO BE ADAPTED TO TAKE IN TILE DIMENSIONS AS INPUT.... 
-	 * CURRENTLY IT IS USING GAMESQUARE
-	 * WHICH IS INVALID 	
-	 */
 	static getCanvasX(
 		location:CanvasCoordinates,
 		dimensions: TileDimensions, 
@@ -209,9 +188,7 @@ export default class RenderEngine {
 				sprite.spriteName === terrainName 
 				:sprite.spriteName === spriteName
 				        // ^'Forest0', 'RockOne'
-		);
-								
-		/// return entire sprite Obj including frames frame to be passed next to render
+		);						
 	}
 
 	//// each sprite possible 1 or 2 frames
