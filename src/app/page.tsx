@@ -1,4 +1,4 @@
-import { FetchRedirectToken } from "@/components";
+import { RedirectButton } from "@/components";
 import Canvas from "@/components/Canvas";
 import { durations } from "@/constants/durations";
 
@@ -9,7 +9,7 @@ export default function Home() {
       <Canvas>
        {/* Pass server components */}
         { durations.map((duration)=>
-          <FetchRedirectToken key={duration} duration={duration} />
+          <RedirectButton key={duration} duration={duration} />
         ) }
       </Canvas>
     </main>     

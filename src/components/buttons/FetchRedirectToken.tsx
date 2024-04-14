@@ -1,7 +1,6 @@
 'use server'
 
 import type { Duration } from "@/types";
-import RedirectButton from "./RedirectButton";
 import { oneDay, oneWeek, unlimited } from "@/constants/durations";
 
 export type CustomComponentProps = {
@@ -17,14 +16,13 @@ export type CustomComponentProps = {
 type ResponseData = {
 	redirectToken:string
 }
-export default async function FetchRedirectToken(props: CustomComponentProps){
+
+export default async function fetchRedirectToken(props: CustomComponentProps){
 
 	const { duration } = props;
 
 	/// todo::: this needs to be restructured, 	
 	/// currently on-load, 3 requests are made instead of only a single request
-	let redirectToken;
-	
 	const offerId =()=>{
 		const ids= [{
 			duration: oneWeek,
@@ -40,14 +38,15 @@ export default async function FetchRedirectToken(props: CustomComponentProps){
 	}
 
 	const url = `${process.env.REDIRECT_TOKEN_ENDPOINT}?businessId=${process.env.BUSINESS_ID}&offerIds[]=${offerId()?.offerId}`;
-	await fetch(url, {
+	return await fetch(url, {
 		method: 'GET', // Specify the HTTP method
 		headers: {
 			'Content-Type': 'application/json', // Example of a custom header
 			// Add any other custom headers as needed
 			'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
 		},
-	}).then((response) => {
+	})
+	.then((response) => {
 		if(!response ||response.status !== 200) throw new Error('invalid response')
 			try{
 				// Parse response as JSON
@@ -60,13 +59,11 @@ export default async function FetchRedirectToken(props: CustomComponentProps){
 	})
 	.then((data:ResponseData) => {
 		// Access the parsed JSON data
-		console.log('Data:', data);
+		// console.log('Data:', data);
 		if(!data.redirectToken) throw new Error('no response data')
-		redirectToken = data?.redirectToken;
+		return data.redirectToken;
 	})
 	.catch(error => {
 		console.error('Error:', error);
 	});
-
-	return <RedirectButton duration={duration} redirectToken={redirectToken} />;
 }
