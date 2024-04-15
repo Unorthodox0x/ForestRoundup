@@ -30,7 +30,7 @@ export default function AccountSettings(){
 						className={
 							isMobile
 							? "flex h-6 p-2 self-end items-center text-sm rounded-full bg-green-800"
-							: "flex h-6 p-2 items-center text-sm rounded-full bg-green-800 hover:translate-x-1 hover:-translate-y-2"
+							: "flex h-6 p-2 items-center text-sm rounded-full bg-green-800 hover:translate-x-1 hover:-translate-y-1"
 						}
 						onClick={() => { handleDisconnect() }}
 					>
