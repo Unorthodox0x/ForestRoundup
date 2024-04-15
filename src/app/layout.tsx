@@ -39,7 +39,9 @@ export default function RootLayout({
     <html lang="en">
 
     <Head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Forest Roundup</title>
+        <meta name="description" content="Forest Roundup" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </Head>
 
       <body className={inter.className}>
