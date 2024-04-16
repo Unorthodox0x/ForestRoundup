@@ -1,8 +1,6 @@
 
-const generateCsp = () => {
-const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+const generateCsp = (nonce) => {
   const production = process.env.NODE_ENV === 'production';
-
   const cspHeader = `
     default-src 'self' https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/ http://fonts.googleapis.com/css?family=Lato;
     script-src 'self' ${production ? '' : "'unsafe-eval'"} 'nonce-${nonce}' 'strict-dynamic';
@@ -79,32 +77,29 @@ module.exports = getConfig({
 
   // Adding Content Security Policies:
   async headers() {
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
     return [
       {
-        source: '/(.*)',
+        source: '/(.*)', /// allows requests from any source
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "https://checkout.etherjolt.com" },
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
           { 
             key: "Access-Control-Allow-Headers", 
-            value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Authorization, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
-          {
-            key: 'Content-Security-Policy',
-            value: generateCsp()
+            value: "X-CSRF-Token, X-Requested-With, Authorization, Content-Length, Content-MD5, Content-Type" 
           },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: "X-XXS-Protection",
-            value: "1; mode=block"
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Methods", value: "GET,POST" },
+          { key: "Access-Control-Allow-Origin", value: "https://checkout.etherjolt.com" },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin', },
+
+          // https://nextjs.org/docs/pages/api-reference/next-config-js/headers#x-dns-prefetch-control
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: 'Content-Security-Policy', value: generateCsp(nonce) },
+          { key: 'X-Content-Type-Options', value: 'nosniff', },
+          { key: "x-nonce", value: nonce },
+          { key: "X-XXS-Protection", value: "1; mode=block" },
+          { key: 'Permissions-Policy', value: 'fullscreen=(self), ' },
           {
             key: "Strict-Transport-Security",
             value: "max-age=31536000; includeSubDomains; preload"
