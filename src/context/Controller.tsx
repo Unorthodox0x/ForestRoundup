@@ -63,11 +63,6 @@ export const ControllerProvider = ({ children }: { children: ReactNode }): React
 				!sprites.current
 			) return;
 
-			console.log('loadCanvas:::canvasHeight',canvasHeight)
-			console.log('loadCanvas:::canvasWidth',canvasWidth)
-			console.log('loadCanvas:::tileHeight',tileHeight)
-			console.log('loadCanvas:::tileWidth',tileWidth)
-
 			eventHandler.handleStart(
 				playerCanvas.current, ///1st player context is unique because of being located in this function scope...?
 				enemyCanvas.current, /// this is global enemy context, shared by all enemies
